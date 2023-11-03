@@ -8,7 +8,7 @@ import { enqueueSnackbar } from "notistack";
 import { LotContext } from "../../../contexts/LotContext";
 import DropDown from "../common/dropDown/DropDown";
 
-export default function LotCard(props: { lot: Lot }) {
+export default function LotCard(props: { lot: Lot; number: number }) {
   const [open, setOpen] = useState(false);
 
   const { curAuctionId, isAuthor, auction } = useContext(AuctionContext);
@@ -24,7 +24,7 @@ export default function LotCard(props: { lot: Lot }) {
   const buyoutLot =
     props.lot.buyoutPrice === 0 ? "Не выкуплен" : `${props.lot.buyoutPrice}р.`;
 
-  const curBet = props.lot.bets
+  const curBet = props.lot.bets.length
     ? Math.max(...props.lot.bets.map((bet) => bet.value))
     : "Ставок нет";
 
@@ -76,7 +76,7 @@ export default function LotCard(props: { lot: Lot }) {
 
   return (
     <div className="card_container">
-      <div className="title">{props.lot.name}</div>
+      <div className="title">{props.number + 1}. {props.lot.name}</div>
       <div className="state">Статус: {getStateFromEnum(props.lot.state)}</div>
       <div className="description">{props.lot.description}</div>
       <div className="image_box">

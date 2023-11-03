@@ -70,7 +70,11 @@ export default function ProfilePage() {
                 </div>
               </div>
             ) : (
-              lots.map((lot) => <LotCard key={lot.id} lot={lot} />)
+              lots
+                .map((lot, index) => (
+                  <LotCard key={lot.id} lot={lot} number={index} />
+                ))
+                .reverse()
             )}
           </div>
         </div>
