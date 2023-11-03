@@ -1,4 +1,5 @@
 using Backend.Application.AuctionData.IRepository;
+using Backend.Application.LotData.Dto;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -31,14 +32,12 @@ public class DoBetHandler
     /// <summary>
     /// Сделать ставку
     /// </summary>
-    /// <param name="auctionId">Уникальный идентификатор аукциона</param>
-    /// <param name="lotId">Уникальный идентификатор лота</param>
-    /// <param name="userId">Уникальный идентификатор пользователя</param>
-    public async Task DoBetAsync(Guid auctionId, Guid lotId, Guid userId)
+    /// <param name="doBetDto">Сделать ставку</param>
+    public async Task DoBetAsync(DoBetDto doBetDto)
     {
-        var auction = await _auctionRepository.SelectAsync(auctionId);
+        var auction = await _auctionRepository.SelectAsync(doBetDto.AuctionId);
 
-        auction.DoBet(lotId, userId);
+        auction.DoBet(doBetDto.LotId, doBetDto.UserId);
 
         await _auctionRepository.UpdateAsync(auction);
 

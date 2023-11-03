@@ -1,5 +1,6 @@
 using Backend.Application.LotData.Dto;
 using Backend.Application.LotData.IRepository;
+using Backend.Domain.Entity;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -50,6 +51,20 @@ public class GetLotsByAuctionHandler
                 imagesData.Add(imageData);
             }
 
+            var betsDto = new List<Bet>();
+
+            foreach (var bet in lot.Bets)
+            {
+                betsDto.Add(new Bet
+                {
+                    Id = bet.Id,
+                    Value = bet.Value,
+                    LotId = bet.LotId,
+                    UserId = bet.UserId,
+                    DateTime = bet.DateTime
+                });
+            }
+
             lotsDto.Add(new LotDto()
             {
                 Id = lot.Id,
@@ -59,7 +74,7 @@ public class GetLotsByAuctionHandler
                 BuyoutPrice = lot.BuyoutPrice,
                 BetStep = lot.BetStep,
                 State = lot.State,
-                Bets = lot.Bets,
+                Bets = betsDto,
                 Images = imagesData
             });
         }

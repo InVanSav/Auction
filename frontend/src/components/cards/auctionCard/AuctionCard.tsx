@@ -13,6 +13,8 @@ export default function AuctionCard(props: { auction: Auction; author: User }) {
   const dateStart = new Date(props.auction.dateStart);
   const dateEnd = new Date(props.auction.dateEnd);
 
+  const isEndValid = props.auction?.dateStart < props.auction?.dateEnd;
+
   const invite = () => {
     setAuctionId(props.auction.id);
     navigate("/lots");
@@ -30,10 +32,12 @@ export default function AuctionCard(props: { auction: Auction; author: User }) {
           <div className="info_date">Дата начала:</div>
           <div className="date_text">{dateStart.toLocaleString()}</div>
         </div>
-        <div>
-          <div className="info_date">Дата конца:</div>
-          <div className="date_text">{dateEnd.toLocaleString()}</div>
-        </div>
+        {isEndValid && (
+          <div>
+            <div className="info_date">Дата конца:</div>
+            <div className="date_text">{dateEnd.toLocaleString()}</div>
+          </div>
+        )}
         <div className="author">{props.author.name}</div>
       </div>
       <button className="submit_create" onClick={invite}>

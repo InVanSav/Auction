@@ -7,20 +7,21 @@ import { enqueueSnackbar } from "notistack";
 import { AuctionContext } from "../../../../contexts/AuctionContext";
 import { Auction } from "../../../../objects/Entities";
 import { State, getStateFromEnum } from "../../../../objects/Enums";
+import DropDown from "../../../../components/cards/common/dropDown/DropDown";
 
-export default function LotPageHeader(props: { auction: Auction }) {
-  const { author, isAuthor } = useContext(AuctionContext);
+export default function LotPageHeader() {
+  const { author, isAuthor, auction } = useContext(AuctionContext);
   const [open, setOpen] = useState(false);
 
   const { deleteAuction, changeState, curAuctionId } =
     useContext(AuctionContext);
 
   const isChangable =
-    props.auction?.state == State.running ||
-    props.auction?.state == State.editing ||
-    props.auction?.state == State.awaiting;
+    auction?.state == State.running ||
+    auction?.state == State.editing ||
+    auction?.state == State.awaiting;
 
-  const isEndValid = props.auction?.dateStart < props.auction?.dateEnd;
+  const isEndValid = auction?.dateStart! < auction?.dateEnd!;
 
   const handleOpen = () => {
     setOpen(!open);
@@ -29,7 +30,7 @@ export default function LotPageHeader(props: { auction: Auction }) {
   const changeStateCurAuction = async (state: State) => {
     if (!curAuctionId) return;
 
-    if (props.auction?.state == state) {
+    if (auction?.state == state) {
       enqueueSnackbar("Выберите статус отличный от текущего", {
         variant: "warning",
       });
@@ -48,14 +49,14 @@ export default function LotPageHeader(props: { auction: Auction }) {
     <div>
       <div className="about_box">
         <div className="main_information">
-          <div className="about_title">{props.auction?.name}</div>
-          <div className="about_description">{props.auction?.description}</div>
+          <div className="about_title">{auction?.name}</div>
+          <div className="about_description">{auction?.description}</div>
         </div>
         <div className="adding_info">
           <div className="wrapper">
             <div className="sub_title">Статус:</div>
             <div className="info_status">
-              {getStateFromEnum(props.auction?.state!)}
+              {getStateFromEnum(auction?.state!)}
             </div>
           </div>
           <div className="wrapper">
@@ -65,15 +66,14 @@ export default function LotPageHeader(props: { auction: Auction }) {
           <div className="wrapper">
             <div className="sub_title">Начало:</div>
             <div className="date_start">
-              {new Date(props.auction?.dateStart!).toLocaleString()}
+              {new Date(auction?.dateStart!).toLocaleString()}
             </div>
           </div>
           {isEndValid && (
             <div className="wrapper">
               <div className="sub_title">Конец:</div>
-
               <div className="date_end">
-                {new Date(props.auction?.dateEnd!).toLocaleString()}
+                {new Date(auction?.dateEnd!).toLocaleString()}
               </div>
             </div>
           )}
@@ -88,40 +88,7 @@ export default function LotPageHeader(props: { auction: Auction }) {
                     alt="Изменить статус"
                   />
                 </button>
-                {open ? (
-                  <div className="menu">
-                    <button
-                      className="button_item"
-                      onClick={() => changeStateCurAuction(State.awaiting)}
-                    >
-                      Ожидание
-                    </button>
-                    <button
-                      className="button_item"
-                      onClick={() => changeStateCurAuction(State.editing)}
-                    >
-                      Редактирование
-                    </button>
-                    <button
-                      className="button_item"
-                      onClick={() => changeStateCurAuction(State.running)}
-                    >
-                      Запущен
-                    </button>
-                    <button
-                      className="button_item"
-                      onClick={() => changeStateCurAuction(State.completed)}
-                    >
-                      Завершен
-                    </button>
-                    <button
-                      className="button_item"
-                      onClick={() => changeStateCurAuction(State.canceled)}
-                    >
-                      Отменен
-                    </button>
-                  </div>
-                ) : null}
+                {open && <DropDown executer={changeStateCurAuction} />}
                 {/* <button className="button_item">
                   <img className="image_item edit" alt="Редактировать" />
                 </button> */}

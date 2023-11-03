@@ -2,6 +2,7 @@ import { enqueueSnackbar } from "notistack";
 import { Lot } from "../../objects/Entities";
 import ILotHttpRepository from "../interfaces/ILotHttpRepository";
 import { handleCommonRequest, handleCommonResponse } from "./RequestHandler";
+import { State } from "../../objects/Enums";
 
 export default class LotHttpRepository implements ILotHttpRepository {
   private baseURL: string;
@@ -91,6 +92,50 @@ export default class LotHttpRepository implements ILotHttpRepository {
       enqueueSnackbar("Лот успешно удален", { variant: "success" });
     } catch (error) {
       enqueueSnackbar("Не удалось удалить лот, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async changeStateAsync(
+    auctionId: string,
+    lotId: string,
+    state: State
+  ): Promise<void> {
+    try {
+      await handleCommonRequest(`${this.baseURL}api/lot/change-status`, "PUT", {
+        auctionId,
+        lotId,
+        state,
+      });
+
+      enqueueSnackbar("Статус лота успешно обновлен", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось изменить статус лота, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async doBetAsync(
+    auctionId: string,
+    lotId: string,
+    userId: string
+  ): Promise<void> {
+    try {
+      await handleCommonRequest(`${this.baseURL}api/lot/do-bet`, "PUT", {
+        auctionId,
+        lotId,
+        userId,
+      });
+
+      enqueueSnackbar("Ставка сделана успешно", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось сделать ставку, попробуйте снова", {
         variant: "error",
       });
     }

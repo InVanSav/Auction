@@ -68,7 +68,7 @@ public class UserController : ControllerBase
     /// Запрос на удаление пользователя
     /// </summary>
     /// <param name="id">Уникальный индентификатор пользователя</param>
-    [HttpDelete("delete/{id:guid}/")]
+    [HttpDelete("delete/{id:guid}")]
     public async Task DeleteUserAsync(Guid id)
     {
         await _deleteHandler.DeleteUserAsync(id);
@@ -79,7 +79,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="id">Уникальный индентификатор пользователя</param>
     /// <returns>Пользователь</returns>
-    [HttpGet("get-by-id/{id:guid}/")]
+    [HttpGet("get-by-id/{id:guid}")]
     public Task<UserDto> GetUserByIdAsync(Guid id)
     {
         return _getByIdHandler.GetUserById(id);
@@ -89,7 +89,7 @@ public class UserController : ControllerBase
     /// Запрос на получение списка пользователей
     /// </summary>
     /// <returns>Список пользователей</returns>
-    [HttpGet("get-list/")]
+    [HttpGet("get-list")]
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
         return await _getHandler.GetUsersAsync();
@@ -101,7 +101,7 @@ public class UserController : ControllerBase
     /// <param name="user">Пользователь</param>
     /// <returns>Пользователь</returns>
     [AllowAnonymous]
-    [HttpPost("sign-in/")]
+    [HttpPost("sign-in")]
     public Task<UserDto> SignInUserAsync([FromBody] UserSignInDto user)
     {
         return _signInHandler.SignInUserAsync(user.Email, user.Password);
@@ -112,7 +112,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="user">Пользователь</param>
     [AllowAnonymous]
-    [HttpPost("sign-up/")]
+    [HttpPost("sign-up")]
     public async Task SignUpUserAsync([FromBody] UserDto user)
     {
         await _signUpHandler.SignUpUserAsync(user);
@@ -122,7 +122,7 @@ public class UserController : ControllerBase
     /// Запрос на обновление пользователя
     /// </summary>
     /// <param name="user">Пользователь</param>
-    [HttpPut("update/")]
+    [HttpPut("update")]
     public async Task UpdateUserAsync([FromBody] UserDto user)
     {
         await _updateHandler.UpdateUserAsync(user);

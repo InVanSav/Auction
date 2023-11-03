@@ -41,6 +41,7 @@ public class ChangeAuctionStatusHandler
         auction.ChangeStatus(newStatus.State);
         foreach (var lot in auction.Lots.Values)
         {
+            if (lot.State is State.Completed or State.Canceled) continue;
             lot.ChangeStatus(newStatus.State);
         }
 

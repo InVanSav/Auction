@@ -1,3 +1,3 @@
 DELETE
 FROM "Bets"
-WHERE "id" = @id;
+WHERE "lotId" = @lotId;

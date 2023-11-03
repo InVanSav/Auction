@@ -1,4 +1,5 @@
 using Backend.Application.AuctionData.IRepository;
+using Backend.Application.LotData.Dto;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -31,13 +32,12 @@ public class BuyoutLotHandler
     /// <summary>
     /// Выкупить лот
     /// </summary>
-    /// <param name="auctionId">Уникальный идентификатор аукциона</param>
-    /// <param name="lotId">Уникальный идентификатор лота</param>
-    public async Task BuyoutLotAsync(Guid auctionId, Guid lotId)
+    /// <param name="buyoutDto">Выкупить лот</param>
+    public async Task BuyoutLotAsync(BuyoutDto buyoutDto)
     {
-        var auction = await _auctionRepository.SelectAsync(auctionId);
+        var auction = await _auctionRepository.SelectAsync(buyoutDto.AuctionId);
 
-        auction.BuyoutLot(lotId);
+        auction.BuyoutLot(buyoutDto.LotId);
 
         await _auctionRepository.UpdateAsync(auction);
 
