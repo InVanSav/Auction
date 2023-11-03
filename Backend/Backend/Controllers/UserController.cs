@@ -44,6 +44,11 @@ public class UserController : ControllerBase
     private readonly UpdateUserHandler _updateHandler;
 
     /// <summary>
+    /// Обработчик разлогинивания пользователя
+    /// </summary>
+    private readonly SignOutUserHandler _signOutHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="deleteHandler">Обработчик удаления пользователя</param>
@@ -54,7 +59,7 @@ public class UserController : ControllerBase
     /// <param name="updateHandler">Обработчик обновления пользователя</param>
     public UserController(DeleteUserHandler deleteHandler, GetUserByIdHandler getByIdHandler,
         GetUsersHandler getHandler, SignInUserHandler signInHandler, SignUpUserHandler signUpHandler,
-        UpdateUserHandler updateHandler)
+        UpdateUserHandler updateHandler, SignOutUserHandler signOutHandler)
     {
         _deleteHandler = deleteHandler;
         _getByIdHandler = getByIdHandler;
@@ -62,6 +67,7 @@ public class UserController : ControllerBase
         _signInHandler = signInHandler;
         _signUpHandler = signUpHandler;
         _updateHandler = updateHandler;
+        _signOutHandler = signOutHandler;
     }
 
     /// <summary>
@@ -94,7 +100,17 @@ public class UserController : ControllerBase
     {
         return await _getHandler.GetUsersAsync();
     }
-
+    
+    /// <summary>
+    /// Запрос на аутентификацию пользователя
+    /// </summary>
+    /// <returns>Пользователь</returns>
+    [HttpPost("sign-out")]
+    public void SignOutUserAsync()
+    {
+        _signOutHandler.SignOutUserAsync();
+    }
+    
     /// <summary>
     /// Запрос на аутентификацию пользователя
     /// </summary>

@@ -85,6 +85,9 @@ export const UserAuthorizationProvider: React.FC<PropsWithChildren> = ({
   const signout = () => {
     localStorage.clear();
     setUser(undefined);
+
+    userHttpRepository.signoutAsync();
+
     navigate("/authorization");
   };
 

@@ -88,6 +88,20 @@ export default class UserHttpRepository implements IUserHttpRepository {
     }
   }
 
+  async signoutAsync(): Promise<void> {
+    try {
+      await handleCommonRequest(`${this.baseURL}api/user/sign-out`, "POST", {});
+
+      enqueueSnackbar("Вы успешно вышли", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось выполнить выход, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
   async putAsync(entity: User): Promise<void> {
     try {
       await handleCommonRequest(
