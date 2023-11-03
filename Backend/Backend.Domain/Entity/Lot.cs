@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using Backend.Domain.Enum;
 using FluentResults;
 
@@ -68,16 +69,6 @@ public class Lot
     public State State { get; private set; } = State.Awaiting;
 
     /// <summary>
-    /// Проверка актуальности лота
-    /// </summary>
-    public bool IsPurchased => State is (State.Canceled or State.Completed);
-
-    /// <summary>
-    /// Проверка редактируемости лота
-    /// </summary>
-    public bool IsEditable => State is not (State.Running or State.Canceled or State.Completed);
-
-    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="name">Название лота</param>
@@ -132,9 +123,6 @@ public class Lot
     /// <returns>Успех или неудача</returns>
     public Result UpdateInformation(string name, string description, decimal betStep, IEnumerable<Image> images)
     {
-        if (!IsEditable)
-            return Result.Fail("Вы не можете изменить информацию, лот не редактируем");
-
         Name = name;
         Description = description;
         BetStep = betStep;
@@ -151,9 +139,6 @@ public class Lot
     /// <returns>Успех или неудача</returns>
     public Result SetImages(IEnumerable<Image> images)
     {
-        if (!IsEditable)
-            return Result.Fail("Вы не можете изменить информацию, лот не редактируем");
-
         _images.Clear();
 
         foreach (var image in images)
@@ -176,9 +161,6 @@ public class Lot
     /// <returns>Успех или неудача</returns>
     public Result SetBets(IEnumerable<Bet> bets)
     {
-        if (!IsEditable)
-            return Result.Fail("Вы не можете изменить информацию, лот не редактируем");
-
         _bets.Clear();
 
         foreach (var bet in bets)
@@ -202,11 +184,7 @@ public class Lot
     /// <returns>Успех или неудача</returns>
     public Result SetBuyoutPrice()
     {
-        if (!IsPurchased)
-            return Result.Fail("Вы не можете установить цену выкупа, лот не продан");
-
-        BuyoutPrice = _bets.Count > 0 ? _bets.Max()!.Value : 0;
-
+        BuyoutPrice = _bets.Count > 0 ? StartPrice + _bets.Max(b => b.Value) : 0;
         return Result.Ok();
     }
 
@@ -217,9 +195,6 @@ public class Lot
     /// <returns>Успех или неудача</returns>
     public Result TryDoBet(Guid userId)
     {
-        if (IsPurchased)
-            return Result.Fail("Вы не можете изменить информацию, лот не продан");
-
         lock (_locker)
         {
             var value = _bets.Count > 0
@@ -228,6 +203,7 @@ public class Lot
 
             var bet = new Bet
             {
+                Id = Guid.NewGuid(),
                 Value = value,
                 LotId = Id,
                 UserId = userId,
@@ -247,6 +223,8 @@ public class Lot
     /// <returns>Успех или неудача</returns>
     public Result ChangeStatus(State state)
     {
+        if (state is State.Completed) SetBuyoutPrice();
+
         State = state;
 
         return Result.Ok();

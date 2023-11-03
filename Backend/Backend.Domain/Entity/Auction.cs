@@ -49,16 +49,6 @@ public class Auction
     public Dictionary<Guid, Lot> Lots { get; } = new();
 
     /// <summary>
-    /// Проверка актуальности аукциона
-    /// </summary>
-    public bool IsActive => State is not (State.Canceled or State.Completed);
-
-    /// <summary>
-    /// Проверка редактируемости аукциона
-    /// </summary>
-    public bool IsEditable => State is not (State.Running or State.Canceled or State.Completed);
-
-    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="name">Название аукциона</param>
@@ -101,9 +91,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result UpdateInformation(string? name, string? description)
     {
-        if (!IsEditable)
-            return Result.Fail("Вы не можете изменить информацию, аукцион не редактируем");
-
         Name = name;
         Description = description;
 
@@ -116,9 +103,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result SetDateStart()
     {
-        if (!IsActive)
-            return Result.Fail("Аукцион завершен или отменен, установить дату начала нельзя");
-
         DateStart = DateTime.Now;
 
         return Result.Ok();
@@ -130,9 +114,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result SetDateEnd()
     {
-        if (IsActive)
-            return Result.Fail("Аукцион активен, установить дату завершения нельзя");
-
         DateEnd = DateTime.Now;
 
         var lotsWithBets = Lots.Values.Where(l => l.Bets.Count > 0).ToArray();
@@ -150,9 +131,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result BuyoutLot(Guid lotId)
     {
-        if (!IsActive)
-            return Result.Fail("Аукцион не активен, выкупить лот нельзя");
-
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.SetBuyoutPrice()
             : Result.Fail("Лот не найден");
@@ -187,6 +165,8 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result ChangeLotStatus(Guid lotId, State state)
     {
+        if (State is State.Completed) BuyoutLot(lotId);
+
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.ChangeStatus(state)
             : Result.Fail("Лот не найден");
@@ -200,9 +180,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result DoBet(Guid lotId, Guid userId)
     {
-        if (!IsActive)
-            return Result.Fail("Аукцион не активен, выкупить лот нельзя");
-
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.TryDoBet(userId)
             : Result.Fail("Лот не найден");
@@ -216,9 +193,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result AddLotImages(Guid lotId, IEnumerable<Image> images)
     {
-        if (!IsEditable)
-            return Result.Fail("Аукцион не редактируем, устанавливать изображения лота нельзя");
-
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.SetImages(images)
             : Result.Fail("Лот не найден");
@@ -232,9 +206,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result AddLotBets(Guid lotId, IEnumerable<Bet> bets)
     {
-        if (!IsEditable)
-            return Result.Fail("Аукцион не редактируем, устанавливать ставки лота нельзя");
-
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.SetBets(bets)
             : Result.Fail("Лот не найден");
@@ -249,9 +220,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result AddLot(Lot lot, IEnumerable<Image> images, IEnumerable<Bet> bets)
     {
-        if (!IsActive)
-            return Result.Fail("Аукцион не активен, выкупить лот нельзя");
-
         Lots.Add(lot.Id, lot);
         AddLotImages(lot.Id, images);
         AddLotBets(lot.Id, bets);
@@ -271,9 +239,6 @@ public class Auction
     public Result UpdateLot(Guid lotId, string name, string description, decimal betStep,
         IEnumerable<Image> images)
     {
-        if (!IsEditable)
-            return Result.Fail("Вы не можете изменить информацию, аукцион не редактируем");
-
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.UpdateInformation(name, description, betStep, images)
             : Result.Fail("Лот не найден");
@@ -286,9 +251,6 @@ public class Auction
     /// <returns>Успех или неудача</returns>
     public Result RemoveLot(Guid lotId)
     {
-        if (!IsActive)
-            return Result.Fail("Аукцион не активен, выкупить лот нельзя");
-
         if (!Lots.ContainsKey(lotId))
             return Result.Fail("Лот не найден");
 
