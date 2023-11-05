@@ -1,6 +1,7 @@
 using Backend.Application.AuctionData.Dto;
 using Backend.Application.AuctionData.IRepository;
 using Backend.Application.LotData.Dto;
+using FluentResults;
 
 namespace Backend.Application.AuctionData.UseCases;
 
@@ -15,19 +16,72 @@ public class GetAuctionsHandler
     private readonly IAuctionRepository _auctionRepository;
 
     /// <summary>
+    /// Обработчик файлов
+    /// </summary>
+    private readonly FileHandler.FileHandler _fileHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="auctionRepository">Репозиторий аукциона</param>
-    public GetAuctionsHandler(IAuctionRepository auctionRepository)
+    /// <param name="fileHandler">Обработчик файлов</param>
+    public GetAuctionsHandler(IAuctionRepository auctionRepository, FileHandler.FileHandler fileHandler)
     {
         _auctionRepository = auctionRepository;
+        _fileHandler = fileHandler;
+    }
+
+    /// <summary>
+    /// Получить аукцион
+    /// </summary>
+    /// <param name="id">Уникальный идентификатор аукциона</param>
+    /// <returns>Модель аукциона</returns>
+    public async Task<Result<AuctionDto>> GetAuctionByIdAsync(Guid id)
+    {
+        var auction = await _auctionRepository.SelectAsync(id);
+
+        var lotsDto = new List<LotDto>();
+        var lots = auction.Lots;
+
+        foreach (var lot in lots.Values)
+        {
+            var imagesData = await _fileHandler.GetImagesFromHost(lot.Name);
+
+            if (imagesData == null)
+                return Result.Fail<AuctionDto>("Изображения не найдены");
+
+            lotsDto.Add(new LotDto()
+            {
+                Id = lot.Id,
+                Name = lot.Name,
+                Description = lot.Description,
+                StartPrice = lot.StartPrice,
+                BuyoutPrice = lot.BuyoutPrice,
+                BetStep = lot.BetStep,
+                State = lot.State,
+                Bets = lot.Bets,
+                Images = imagesData
+            });
+        }
+
+        return Result.Ok(new AuctionDto
+        {
+            Id = auction.Id,
+            Name = auction.Name,
+            Description = auction.Description,
+            DateStart = auction.DateStart,
+            DateEnd = auction.DateEnd,
+            AuthorId = auction.AuthorId,
+            State = auction.State,
+            Lots = lotsDto
+        });
     }
 
     /// <summary>
     /// Получить список аукционов
     /// </summary>
     /// <returns>Список моделей аукциона</returns>
-    public async Task<IReadOnlyCollection<AuctionDto>> GetAuctions()
+    public async Task<Result<IReadOnlyCollection<AuctionDto>>> GetAuctions()
     {
         var auctionsDto = new List<AuctionDto>();
         var auctions = await _auctionRepository.SelectManyAsync();
@@ -37,35 +91,23 @@ public class GetAuctionsHandler
             var lotsDto = new List<LotDto>();
             var lots = auction.Lots;
 
-            foreach (var lot in lots)
+            foreach (var lot in lots.Values)
             {
-                var imagesData = new List<object>();
+                var imagesData = await _fileHandler.GetImagesFromHost(lot.Name);
 
-                var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Backend.Images", lot.Value.Name);
-                if (!Directory.Exists(imagesPath)) continue;
-
-                var imageFiles = Directory.GetFiles(imagesPath);
-
-                foreach (var imageFile in imageFiles)
-                {
-                    var imageBytes = await File.ReadAllBytesAsync(imageFile);
-                    var base64Image = Convert.ToBase64String(imageBytes);
-                    var imageName = Path.GetFileName(imageFile);
-
-                    var imageData = new { name = imageName, data = base64Image };
-                    imagesData.Add(imageData);
-                }
+                if (imagesData == null)
+                    return Result.Fail<IReadOnlyCollection<AuctionDto>>("Изображения не найдены");
 
                 lotsDto.Add(new LotDto()
                 {
-                    Id = lot.Value.Id,
-                    Name = lot.Value.Name,
-                    Description = lot.Value.Description,
-                    StartPrice = lot.Value.StartPrice,
-                    BuyoutPrice = lot.Value.BuyoutPrice,
-                    BetStep = lot.Value.BetStep,
-                    State = lot.Value.State,
-                    Bets = lot.Value.Bets,
+                    Id = lot.Id,
+                    Name = lot.Name,
+                    Description = lot.Description,
+                    StartPrice = lot.StartPrice,
+                    BuyoutPrice = lot.BuyoutPrice,
+                    BetStep = lot.BetStep,
+                    State = lot.State,
+                    Bets = lot.Bets,
                     Images = imagesData
                 });
             }
@@ -84,6 +126,6 @@ public class GetAuctionsHandler
                 });
         }
 
-        return auctionsDto;
+        return Result.Ok<IReadOnlyCollection<AuctionDto>>(auctionsDto);
     }
 }

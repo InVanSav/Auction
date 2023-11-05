@@ -1,5 +1,6 @@
 using Backend.Application.UserData.Dto;
 using Backend.Application.UserData.IRepository;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -18,7 +19,7 @@ public class SignInUserHandler
     /// <summary>
     /// Обработчик авторизации
     /// </summary>
-    private readonly AuthorityHandler _authorityHandler;
+    private readonly AuthorizationHandler _authorityHandler;
 
     /// <summary>
     /// Доступ к контексту запроса
@@ -31,7 +32,7 @@ public class SignInUserHandler
     /// <param name="userRepository">Репозиторий пользователя</param>
     /// <param name="authorityHandler">Обработчик авторизации</param>
     /// <param name="httpContextAccessor">Доступ к контексту запроса</param>
-    public SignInUserHandler(IUserRepository userRepository, IOptions<AuthorityHandler> authorityHandler,
+    public SignInUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorityHandler,
         IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
@@ -42,16 +43,15 @@ public class SignInUserHandler
     /// <summary>
     /// Авторизовать пользователя
     /// </summary>
-    /// <param name="email">Почта пользователя</param>
-    /// <param name="password">Пароль пользователя</param>
-    public async Task<UserDto> SignInUserAsync(string email, string password)
+    /// <param name="userSignInDto">Аутентификация пользователя</param>
+    public async Task<Result<UserDto>> SignInUserAsync(UserSignInDto userSignInDto)
     {
-        var user = await _userRepository.SelectByNameAsync(email);
+        var user = await _userRepository.SelectByNameAsync(userSignInDto.Email);
 
-        if (!_authorityHandler.VerifyUserData(email, password, user))
-            return new UserDto();
+        if (!_authorityHandler.VerifyUserData(userSignInDto.Email, userSignInDto.Password, user))
+            return Result.Fail<UserDto>("Пользователя не существует или в данных ошибка");
 
-        var token = _authorityHandler.CreateToken(email);
+        var token = _authorityHandler.CreateToken(userSignInDto.Email);
 
         _httpContextAccessor.HttpContext?.Response.Cookies.Append(".AspNet.Application.Id", token,
             new CookieOptions

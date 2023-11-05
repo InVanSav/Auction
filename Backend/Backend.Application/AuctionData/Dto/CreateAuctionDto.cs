@@ -3,20 +3,20 @@ namespace Backend.Application.AuctionData.Dto;
 /// <summary>
 /// Класс для создания аукциона
 /// </summary>
-public class CreateAuctionDto
+public record CreateAuctionDto
 {
     /// <summary>
     /// Название аукциона
     /// </summary>
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     /// <summary>
     /// Описание аукциона
     /// </summary>
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     /// <summary>
     /// Уникальный идентификатор пользователя-создателя
     /// </summary>
-    public Guid AuthorId { get; set; }
+    public Guid AuthorId { get; init; }
 }

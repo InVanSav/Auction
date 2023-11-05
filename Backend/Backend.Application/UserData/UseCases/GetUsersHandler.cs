@@ -36,6 +36,6 @@ public class GetUsersHandler
             Name = user.Name,
             Email = user.Email,
             Password = user.Password
-        }).AsParallel().ToList();
+        }).ToList();
     }
 }

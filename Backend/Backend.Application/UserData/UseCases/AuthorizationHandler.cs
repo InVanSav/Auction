@@ -10,7 +10,7 @@ namespace Backend.Application.UserData.UseCases;
 /// <summary>
 /// Обработчик авторизации
 /// </summary>
-public class AuthorityHandler
+public class AuthorizationHandler
 {
     /// <summary>
     /// Длина хеша
@@ -56,7 +56,7 @@ public class AuthorityHandler
     /// <param name="email">Почта пользователя</param>
     /// <param name="user">Пользователь</param>
     /// <returns>True или False</returns>
-    public bool VerifyUserData(string email, string password, User user)
+    internal bool VerifyUserData(string email, string password, User user)
     {
         var hashToCompare = Rfc2898DeriveBytes.Pbkdf2(
             Encoding.ASCII.GetBytes(password),
@@ -80,7 +80,7 @@ public class AuthorityHandler
     /// </summary>
     /// <param name="email">Почта пользователя</param>
     /// <returns>Токен</returns>
-    public string CreateToken(string email)
+    internal string CreateToken(string email)
     {
         var symmetricKey = Encoding.ASCII.GetBytes(Secret);
         var tokenHandler = new JwtSecurityTokenHandler();

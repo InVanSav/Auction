@@ -20,7 +20,7 @@ public class SignOutUserHandler
     {
         _httpContextAccessor = httpContextAccessor;
     }
-    
+
     /// <summary>
     /// Разлогинивание пользователя
     /// </summary>

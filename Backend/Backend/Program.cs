@@ -4,6 +4,7 @@ using Backend.Application.AuctionData.IRepository;
 using Backend.Application.AuctionData.UseCases;
 using Backend.Application.LotData.IRepository;
 using Backend.Application.LotData.UseCases;
+using Backend.Application.Repositories;
 using Backend.Application.UserData.IRepository;
 using Backend.Application.UserData.UseCases;
 using Backend.Controllers;
@@ -26,7 +27,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddOptions<PgsqlConnection>()
     .Bind(builder.Configuration.GetSection("Config:PgsqlConnection"));
 
-builder.Services.AddOptions<AuthorityHandler>()
+builder.Services.AddOptions<AuthorizationHandler>()
     .Bind(builder.Configuration.GetSection("Config:AuthorityHandler"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -62,7 +63,6 @@ builder.Services.AddSingleton<SetDateStartAuctionHandler>();
 builder.Services.AddSingleton<CreateAuctionHandler>();
 builder.Services.AddSingleton<DeleteAuctionHandler>();
 builder.Services.AddSingleton<GetAuctionsHandler>();
-builder.Services.AddSingleton<GetAuctionByIdHandler>();
 builder.Services.AddSingleton<UpdateAuctionHandler>();
 
 builder.Services.AddSingleton<BuyoutLotHandler>();
@@ -78,7 +78,7 @@ builder.Services.AddSingleton<GetLotsByAuctionHandler>();
 builder.Services.AddSingleton<SignUpUserHandler>();
 builder.Services.AddSingleton<SignInUserHandler>();
 builder.Services.AddSingleton<SignOutUserHandler>();
-builder.Services.AddSingleton<AuthorityHandler>();
+builder.Services.AddSingleton<AuthorizationHandler>();
 
 builder.Services.AddSingleton<DeleteUserHandler>();
 builder.Services.AddSingleton<GetUsersHandler>();

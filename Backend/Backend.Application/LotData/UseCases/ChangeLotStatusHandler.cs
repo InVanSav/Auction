@@ -1,5 +1,6 @@
 using Backend.Application.AuctionData.IRepository;
 using Backend.Application.LotData.Dto;
+using Backend.Application.Repositories;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -37,7 +38,8 @@ public class ChangeLotStatusHandler
     {
         var auction = await _auctionRepository.SelectAsync(changeLotStatusDto.AuctionId);
 
-        auction.ChangeLotStatus(changeLotStatusDto.LotId, changeLotStatusDto.State);
+        var result = auction.ChangeLotStatus(changeLotStatusDto.LotId, changeLotStatusDto.State);
+        if (result.IsFailed) return;
 
         await _auctionRepository.UpdateAsync(auction);
 

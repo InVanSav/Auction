@@ -1,6 +1,7 @@
 using Backend.Application.AuctionData.Dto;
 using Backend.Application.AuctionData.UseCases;
 using Backend.Domain.Enum;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,18 +12,13 @@ namespace Backend.Controllers;
 /// </summary>
 [Authorize]
 [ApiController]
-[Route("api/auction/")]
+[Route("api/auction")]
 public class AuctionController : ControllerBase
 {
     /// <summary>
     /// Обработчик удаления
     /// </summary>
     private readonly DeleteAuctionHandler _deleteHandler;
-
-    /// <summary>
-    /// Обработчик получения аукциона по уникальному идентификатору
-    /// </summary>
-    private readonly GetAuctionByIdHandler _getByIdHandler;
 
     /// <summary>
     /// Обработчик получения списка аукционов
@@ -58,20 +54,18 @@ public class AuctionController : ControllerBase
     /// .ctor
     /// </summary>
     /// <param name="deleteHandler">Обработчик удаления</param>
-    /// <param name="getByIdHandler">Обработчик получения аукциона по уникальному идентификатору</param>
     /// <param name="getHandler">Обработчик получения списка аукционов</param>
     /// <param name="createHandler">Обработчик создания аукциона</param>
     /// <param name="setDateEndHandler">Обработчик установки даты конца</param>
     /// <param name="setDateStartHandler">Обработчик установки даты начала</param>
     /// <param name="updateHandler">Обработчик обновления аукциона</param>
     /// <param name="changeAuctionStatusHandler">Обработчик смены статуса</param>
-    public AuctionController(DeleteAuctionHandler deleteHandler, GetAuctionByIdHandler getByIdHandler,
-        GetAuctionsHandler getHandler, CreateAuctionHandler createHandler, SetDateEndAuctionHandler setDateEndHandler,
+    public AuctionController(DeleteAuctionHandler deleteHandler, GetAuctionsHandler getHandler,
+        CreateAuctionHandler createHandler, SetDateEndAuctionHandler setDateEndHandler,
         SetDateStartAuctionHandler setDateStartHandler, UpdateAuctionHandler updateHandler,
         ChangeAuctionStatusHandler changeAuctionStatusHandler)
     {
         _deleteHandler = deleteHandler;
-        _getByIdHandler = getByIdHandler;
         _getHandler = getHandler;
         _createHandler = createHandler;
         _setDateEndHandler = setDateEndHandler;
@@ -95,9 +89,9 @@ public class AuctionController : ControllerBase
     /// </summary>
     /// <param name="id">Уникальный индентификатор аукциона</param>
     [HttpGet("get-by-id/{id:guid}")]
-    public Task<AuctionDto> GetAuctionByIdAsync(Guid id)
+    public async Task<Result<AuctionDto>> GetAuctionByIdAsync(Guid id)
     {
-        return _getByIdHandler.GetAuctionByIdAsync(id);
+        return await _getHandler.GetAuctionByIdAsync(id);
     }
 
     /// <summary>
@@ -105,7 +99,7 @@ public class AuctionController : ControllerBase
     /// </summary>
     /// <returns>Список аукционов</returns>
     [HttpGet("get-list")]
-    public async Task<IEnumerable<AuctionDto>> GetAuctionsAsync()
+    public async Task<Result<IReadOnlyCollection<AuctionDto>>> GetAuctionsAsync()
     {
         return await _getHandler.GetAuctions();
     }

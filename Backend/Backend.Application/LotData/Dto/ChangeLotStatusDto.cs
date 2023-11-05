@@ -5,20 +5,20 @@ namespace Backend.Application.LotData.Dto;
 /// <summary>
 /// Изменение статуса лота
 /// </summary>
-public class ChangeLotStatusDto
+public record ChangeLotStatusDto
 {
     /// <summary>
     /// Уникальный идентификатор аукциона
     /// </summary>
-    public Guid AuctionId { get; set; }
+    public Guid AuctionId { get; init; }
 
     /// <summary>
     /// Уникальный идентификатор лота
     /// </summary>
-    public Guid LotId { get; set; }
+    public Guid LotId { get; init; }
 
     /// <summary>
     /// Новое состояние
     /// </summary>
-    public State State { get; set; }
+    public State State { get; init; }
 }

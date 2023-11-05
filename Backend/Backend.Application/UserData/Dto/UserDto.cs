@@ -3,7 +3,7 @@ namespace Backend.Application.UserData.Dto;
 /// <summary>
 /// Пользователь
 /// </summary>
-public class UserDto
+public record UserDto
 {
     /// <summary>
     /// Уникальный идентификатор
@@ -13,15 +13,15 @@ public class UserDto
     /// <summary>
     /// Имя пользователя
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
 
     /// <summary>
     /// Почта пользователя
     /// </summary>
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
 
     /// <summary>
     /// Пароль пользователя
     /// </summary>
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
 }

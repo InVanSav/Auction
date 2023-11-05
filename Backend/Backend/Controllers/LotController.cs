@@ -10,7 +10,7 @@ namespace Backend.Controllers;
 /// </summary>
 [Authorize]
 [ApiController]
-[Route("api/lot/")]
+[Route("api/lot")]
 public class LotController : ControllerBase
 {
     /// <summary>

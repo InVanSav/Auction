@@ -1,4 +1,5 @@
 using Backend.Application;
+using Backend.Application.Repositories;
 using Backend.Hubs;
 using Microsoft.AspNetCore.SignalR;
 

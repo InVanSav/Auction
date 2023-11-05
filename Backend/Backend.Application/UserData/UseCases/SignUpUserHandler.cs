@@ -18,14 +18,14 @@ public class SignUpUserHandler
     /// <summary>
     /// Обработчик авторизации
     /// </summary>
-    private readonly AuthorityHandler _authorityHandler;
+    private readonly AuthorizationHandler _authorityHandler;
 
     /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="userRepository">Репозиторий пользователя</param>
     /// <param name="authorityHandler">Обработчик авторизации</param>
-    public SignUpUserHandler(IUserRepository userRepository, IOptions<AuthorityHandler> authorityHandler)
+    public SignUpUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorityHandler)
     {
         _userRepository = userRepository;
         _authorityHandler = authorityHandler.Value;

@@ -1,5 +1,6 @@
 using Backend.Application.AuctionData.IRepository;
 using Backend.Application.LotData.Dto;
+using Backend.Application.Repositories;
 
 namespace Backend.Application.LotData.UseCases;
 

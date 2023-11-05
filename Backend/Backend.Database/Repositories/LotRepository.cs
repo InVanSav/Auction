@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Backend.Application.FileHandler;
 using Backend.Application.LotData.IRepository;
 using Backend.Database.PostgreSQL;
 using Backend.Domain.Entity;
@@ -17,12 +18,19 @@ public class LotRepository : ILotRepository
     private readonly PgsqlHandler _pgsqlHandler;
 
     /// <summary>
+    /// Обработчик файлов
+    /// </summary>
+    private readonly FileHandler _fileHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="pgsqlHandler">Обработчик запросов к базе данных</param>
-    public LotRepository(PgsqlHandler pgsqlHandler)
+    /// <param name="fileHandler">Обработчик файлов</param>
+    public LotRepository(PgsqlHandler pgsqlHandler, FileHandler fileHandler)
     {
         _pgsqlHandler = pgsqlHandler;
+        _fileHandler = fileHandler;
     }
 
     /// <summary>
@@ -225,6 +233,8 @@ public class LotRepository : ILotRepository
     /// <returns>True или False</returns>
     public async Task DeleteAsync(Guid id)
     {
+        var lot = await SelectAsync(id);
+
         await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
             new KeyValuePair<string, object>("lotId", id));
 
@@ -233,5 +243,7 @@ public class LotRepository : ILotRepository
 
         await _pgsqlHandler.ExecuteAsync("Lot.DeleteLot",
             new KeyValuePair<string, object>("id", id));
+
+        await _fileHandler.DeleteImagesFromHostAsync(lot.Name);
     }
 }

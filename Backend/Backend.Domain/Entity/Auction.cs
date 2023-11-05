@@ -11,7 +11,7 @@ public class Auction
     /// <summary>
     /// Уникальный идентификатор
     /// </summary>
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Название аукциона
@@ -26,12 +26,12 @@ public class Auction
     /// <summary>
     /// Начало аукциона
     /// </summary>
-    public DateTime DateStart { get; private set; }
+    public DateTime? DateStart { get; private set; }
 
     /// <summary>
     /// Завершение аукциона
     /// </summary>
-    public DateTime DateEnd { get; private set; }
+    public DateTime? DateEnd { get; private set; }
 
     /// <summary>
     /// Уникальный идентификатор пользователя-создателя
@@ -41,25 +41,12 @@ public class Auction
     /// <summary>
     /// Статус ставки
     /// </summary>
-    public State State { get; private set; } = State.Awaiting;
+    public State State { get; private set; }
 
     /// <summary>
     /// Лоты аукциона
     /// </summary>
     public Dictionary<Guid, Lot> Lots { get; } = new();
-
-    /// <summary>
-    /// .ctor
-    /// </summary>
-    /// <param name="name">Название аукциона</param>
-    /// <param name="description">Описание аукциона</param>
-    /// <param name="authorId">Уникальный идентификатор автора</param>
-    public Auction(string? name, string? description, Guid authorId)
-    {
-        Name = name;
-        Description = description;
-        AuthorId = authorId;
-    }
 
     /// <summary>
     /// .ctor
@@ -71,7 +58,7 @@ public class Auction
     /// <param name="dateEnd">Дата конца аукциона</param>
     /// <param name="authorId">Уникальный идентификатор автора</param>
     /// <param name="state">Текущее состояние аукциона</param>
-    public Auction(Guid id, string? name, string? description, DateTime dateStart, DateTime dateEnd, Guid authorId,
+    public Auction(Guid id, string? name, string? description, DateTime? dateStart, DateTime? dateEnd, Guid authorId,
         State state)
     {
         Id = id;
@@ -191,7 +178,7 @@ public class Auction
     /// <param name="lotId">Уникальный идентификатор лота</param>
     /// <param name="images">Изображения</param>
     /// <returns>Успех или неудача</returns>
-    public Result AddLotImages(Guid lotId, IEnumerable<Image> images)
+    private Result AddLotImages(Guid lotId, IEnumerable<Image> images)
     {
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.SetImages(images)
@@ -204,7 +191,7 @@ public class Auction
     /// <param name="lotId">Уникальный идентификатор лота</param>
     /// <param name="bets">Ставки</param>
     /// <returns>Успех или неудача</returns>
-    public Result AddLotBets(Guid lotId, IEnumerable<Bet> bets)
+    private Result AddLotBets(Guid lotId, IEnumerable<Bet> bets)
     {
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.SetBets(bets)
@@ -242,20 +229,5 @@ public class Auction
         return Lots.TryGetValue(lotId, out var lot)
             ? lot.UpdateInformation(name, description, betStep, images)
             : Result.Fail("Лот не найден");
-    }
-
-    /// <summary>
-    /// Удалить лот
-    /// </summary>
-    /// <param name="lotId">Уникальный идентификатор лота</param>
-    /// <returns>Успех или неудача</returns>
-    public Result RemoveLot(Guid lotId)
-    {
-        if (!Lots.ContainsKey(lotId))
-            return Result.Fail("Лот не найден");
-
-        Lots.Remove(lotId);
-
-        return Result.Ok();
     }
 }

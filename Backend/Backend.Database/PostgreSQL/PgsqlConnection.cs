@@ -8,33 +8,33 @@ public class PgsqlConnection
     /// <summary>
     /// Название сервера
     /// </summary>
-    public string? Server { get; set; }
+    public string? Server { private get; init; }
 
     /// <summary>
     /// Номер порта сервера
     /// </summary>
-    public int Port { get; set; }
+    public int Port { private get; init; }
 
     /// <summary>
     /// Название базы данных
     /// </summary>
-    public string? Database { get; set; }
+    public string? Database { private get; init; }
 
     /// <summary>
     /// Имя владельца базой данных
     /// </summary>
-    public string? User { get; set; }
+    public string? User { private get; init; }
 
     /// <summary>
     /// Пароль базы данных
     /// </summary>
-    public string? Password { get; set; }
+    public string? Password { private get; init; }
 
     /// <summary>
     /// Получить строку подключения к базе данных
     /// </summary>
     /// <returns>Строку подключения к базе данных PostgreSQL</returns>
-    public string GetConnectionString()
+    internal string GetConnectionString()
     {
         return $"Server={Server};Port={Port};Database={Database};User Id={User};Password={Password};";
     }

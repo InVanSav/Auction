@@ -1,5 +1,6 @@
 using Backend.Application.UserData.Dto;
 using Backend.Application.UserData.UseCases;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace Backend.Controllers;
 /// </summary>
 [Authorize]
 [ApiController]
-[Route("api/user/")]
+[Route("api/user")]
 public class UserController : ControllerBase
 {
     /// <summary>
@@ -57,6 +58,7 @@ public class UserController : ControllerBase
     /// <param name="signInHandler">Обработчик аутентификации пользователя</param>
     /// <param name="signUpHandler">Обработчик регистрации пользователя</param>
     /// <param name="updateHandler">Обработчик обновления пользователя</param>
+    /// <param name="signOutHandler">Обработчик разлогинивания пользователя</param>
     public UserController(DeleteUserHandler deleteHandler, GetUserByIdHandler getByIdHandler,
         GetUsersHandler getHandler, SignInUserHandler signInHandler, SignUpUserHandler signUpHandler,
         UpdateUserHandler updateHandler, SignOutUserHandler signOutHandler)
@@ -100,7 +102,7 @@ public class UserController : ControllerBase
     {
         return await _getHandler.GetUsersAsync();
     }
-    
+
     /// <summary>
     /// Запрос на аутентификацию пользователя
     /// </summary>
@@ -110,7 +112,7 @@ public class UserController : ControllerBase
     {
         _signOutHandler.SignOutUserAsync();
     }
-    
+
     /// <summary>
     /// Запрос на аутентификацию пользователя
     /// </summary>
@@ -118,9 +120,9 @@ public class UserController : ControllerBase
     /// <returns>Пользователь</returns>
     [AllowAnonymous]
     [HttpPost("sign-in")]
-    public Task<UserDto> SignInUserAsync([FromBody] UserSignInDto user)
+    public Task<Result<UserDto>> SignInUserAsync([FromBody] UserSignInDto user)
     {
-        return _signInHandler.SignInUserAsync(user.Email, user.Password);
+        return _signInHandler.SignInUserAsync(user);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using Backend.Application.AuctionData.Dto;
 using Backend.Application.AuctionData.IRepository;
+using Backend.Application.Repositories;
 using Backend.Domain.Enum;
 
 namespace Backend.Application.AuctionData.UseCases;

@@ -3,15 +3,15 @@ namespace Backend.Application.LotData.Dto;
 /// <summary>
 /// Выкупить лот
 /// </summary>
-public class BuyoutDto
+public record BuyoutDto
 {
     /// <summary>
     /// Уникальный идентификатор аукциона
     /// </summary>
-    public Guid AuctionId { get; set; }
+    public Guid AuctionId { get; init; }
 
     /// <summary>
     /// Уникальный идентификатор лота
     /// </summary>
-    public Guid LotId { get; set; }
+    public Guid LotId { get; init; }
 }

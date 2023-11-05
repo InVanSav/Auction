@@ -17,7 +17,7 @@ public class Lot
     /// <summary>
     /// Уникальный идентификатор
     /// </summary>
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Название лота
@@ -66,28 +66,7 @@ public class Lot
     /// <summary>
     /// Статус лота
     /// </summary>
-    public State State { get; private set; } = State.Awaiting;
-
-    /// <summary>
-    /// .ctor
-    /// </summary>
-    /// <param name="name">Название лота</param>
-    /// <param name="description">Описание лота</param>
-    /// <param name="auctionId">Уникальный идентификатор аукциона лота</param>
-    /// <param name="startPrice">Начальная цена</param>
-    /// <param name="betStep">Шаг ставки лота</param>
-    /// <param name="images">Изображения лота</param>
-    public Lot(string name, string description, Guid auctionId, decimal startPrice, decimal betStep,
-        IEnumerable<Image> images)
-    {
-        Name = name;
-        Description = description;
-        AuctionId = auctionId;
-        StartPrice = startPrice;
-        BetStep = betStep;
-
-        SetImages(images);
-    }
+    public State State { get; private set; }
 
     /// <summary>
     /// .ctor

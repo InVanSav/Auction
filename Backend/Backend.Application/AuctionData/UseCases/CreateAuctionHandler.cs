@@ -34,8 +34,8 @@ public class CreateAuctionHandler
             Guid.NewGuid(),
             entity.Name,
             entity.Description,
-            new DateTime(),
-            new DateTime(),
+            null,
+            null,
             entity.AuthorId,
             State.Awaiting));
     }

@@ -1,4 +1,5 @@
 using Backend.Application.LotData.IRepository;
+using Backend.Application.Repositories;
 using Backend.Domain.Entity;
 using Backend.Domain.Enum;
 using Microsoft.AspNetCore.Http;
@@ -21,14 +22,22 @@ public class CreateLotHandler
     private readonly INotificationHandler _notificationHandler;
 
     /// <summary>
+    /// Обработчик файлов
+    /// </summary>
+    private readonly FileHandler.FileHandler _fileHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="lotRepository">Репозиторий лота</param>
     /// <param name="notificationHandler">Обработчик уведомлений</param>
-    public CreateLotHandler(ILotRepository lotRepository, INotificationHandler notificationHandler)
+    /// <param name="fileHandler">Обработчик файлов</param>
+    public CreateLotHandler(ILotRepository lotRepository, INotificationHandler notificationHandler,
+        FileHandler.FileHandler fileHandler)
     {
         _lotRepository = lotRepository;
         _notificationHandler = notificationHandler;
+        _fileHandler = fileHandler;
     }
 
     /// <summary>
@@ -37,42 +46,24 @@ public class CreateLotHandler
     /// <param name="formCollection">Изображения лота</param>
     public async Task CreateLotAsync(IFormCollection formCollection)
     {
+        if (!decimal.TryParse(formCollection["startPrice"][0], out var startPrice) ||
+            !decimal.TryParse(formCollection["betStep"][0], out var betStep) ||
+            !Guid.TryParse(formCollection["auctionId"][0], out var auctionId)) return;
+
         var lot = new Lot(
             Guid.NewGuid(),
             formCollection["name"],
             formCollection["description"],
-            Guid.Parse(formCollection["auctionId"]),
-            decimal.Parse(formCollection["startPrice"]),
+            new Guid(formCollection["auctionId"][0]),
+            startPrice,
             0,
-            decimal.Parse(formCollection["betStep"]),
+            betStep,
             State.Awaiting);
 
-        var imageFiles = formCollection.Files.GetFiles("images");
-        var images = new List<Image>();
-        var number = 0;
-        var imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "..", "Backend.Images", lot.Name);
+        var images = await _fileHandler.SaveImagesToHostAsync(
+            formCollection.Files.GetFiles("images"), lot.Id, lot.Name);
 
-        foreach (var image in imageFiles)
-        {
-            if (image.Length <= 0) return;
-
-            var fileName = $"{number}{Path.GetExtension(image.FileName)}";
-            var absolutePath = Path.Combine(imagesDirectory, fileName);
-
-            if (!Directory.Exists(imagesDirectory)) Directory.CreateDirectory(imagesDirectory);
-
-            await using var stream = new FileStream(absolutePath, FileMode.Create);
-            await image.CopyToAsync(stream);
-
-            number++;
-
-            images.Add(new Image
-            {
-                Id = Guid.NewGuid(),
-                LotId = lot.Id,
-                Path = absolutePath
-            });
-        }
+        if (images == null) return;
 
         lot.SetImages(images);
         await _lotRepository.CreateAsync(lot);
