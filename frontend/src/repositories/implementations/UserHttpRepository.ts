@@ -10,34 +10,6 @@ export default class UserHttpRepository implements IUserHttpRepository {
     this.baseURL = baseURL;
   }
 
-  async signinAsync(
-    email: string,
-    password: string
-  ): Promise<User | undefined> {
-    try {
-      const response = await fetch(`${this.baseURL}api/user/sign-in`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset: UTF-8;",
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-
-      if (!handleCommonResponse(response)) return;
-
-      enqueueSnackbar("Вы успешно авторизовались", {
-        variant: "success",
-      });
-
-      return await response.json();
-    } catch (error) {
-      enqueueSnackbar("Не удалось авторизоваться, попробуйте снова", {
-        variant: "error",
-      });
-    }
-  }
-
   async getAsync(): Promise<User[] | undefined> {
     try {
       const response = await fetch(`${this.baseURL}api/user/get-list`, {
@@ -86,6 +58,42 @@ export default class UserHttpRepository implements IUserHttpRepository {
       });
     } catch (error) {
       enqueueSnackbar("Не удалось зарегистрироваться, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async signinAsync(
+    email: string,
+    password: string
+  ): Promise<User | undefined> {
+    try {
+      const response = await fetch(`${this.baseURL}api/user/sign-in`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset: UTF-8;",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+      });
+
+      if (!handleCommonResponse(response)) return;
+
+      enqueueSnackbar("Вы успешно авторизовались", {
+        variant: "success",
+      });
+
+      const result = await response.json();
+
+      if (result.isFailed) {
+        enqueueSnackbar("Что-то не так, попробуйте снова", {
+          variant: "warning",
+        });
+      }
+
+      return result.value;
+    } catch (error) {
+      enqueueSnackbar("Не удалось авторизоваться, попробуйте снова", {
         variant: "error",
       });
     }

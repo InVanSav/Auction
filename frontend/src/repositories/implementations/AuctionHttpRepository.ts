@@ -19,7 +19,15 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
 
       if (!handleCommonResponse(response)) return;
 
-      return await response.json();
+      const result = await response.json();
+
+      if (result.isFailed) {
+        enqueueSnackbar("Что-то не так, попробуйте снова", {
+          variant: "warning",
+        });
+      }
+
+      return result.value;
     } catch (error) {
       enqueueSnackbar("Не удалось получить аукционы, попробуйте снова", {
         variant: "error",
@@ -38,7 +46,15 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
 
       if (!handleCommonResponse(response)) return;
 
-      return await response.json();
+      const result = await response.json();
+
+      if (result.isFailed) {
+        enqueueSnackbar("Что-то не так, попробуйте снова", {
+          variant: "warning",
+        });
+      }
+
+      return result.value;
     } catch (error) {
       enqueueSnackbar("Не удалось получить аукцион, попробуйте снова", {
         variant: "error",

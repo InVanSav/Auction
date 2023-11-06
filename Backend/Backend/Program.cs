@@ -1,7 +1,7 @@
 using System.Text;
-using Backend.Application;
 using Backend.Application.AuctionData.IRepository;
 using Backend.Application.AuctionData.UseCases;
+using Backend.Application.FileHandler;
 using Backend.Application.IRepositories;
 using Backend.Application.LotData.IRepository;
 using Backend.Application.LotData.UseCases;
@@ -55,6 +55,7 @@ builder.Services.AddSingleton<ILotRepository, LotRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<PgsqlHandler>();
+builder.Services.AddSingleton<FileHandler>();
 
 builder.Services.AddSingleton<ChangeAuctionStatusHandler>();
 builder.Services.AddSingleton<SetDateEndAuctionHandler>();

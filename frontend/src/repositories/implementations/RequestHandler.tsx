@@ -3,7 +3,7 @@ import { enqueueSnackbar } from "notistack";
 export function handleCommonResponse(response: Response): boolean {
   if (response.status === 401) {
     enqueueSnackbar("Необходимо авторизоваться", {
-      variant: "success",
+      variant: "warning",
     });
     return false;
   }
