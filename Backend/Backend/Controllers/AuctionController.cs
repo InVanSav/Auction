@@ -77,8 +77,8 @@ public class AuctionController : ControllerBase
     /// Запрос на удаление аукциона
     /// </summary>
     /// <param name="id">Уникальный идентификатор аукциона</param>
-    [HttpDelete("delete/{id:guid}")]
-    public async Task DeleteAuctionAsync(Guid id)
+    [HttpDelete("delete")]
+    public async Task DeleteAuctionAsync([FromQuery] Guid id)
     {
         await _deleteHandler.DeleteAuctionAsync(id);
     }
@@ -87,8 +87,8 @@ public class AuctionController : ControllerBase
     /// Запрос на получение аукциона по уникальному идентификатору
     /// </summary>
     /// <param name="id">Уникальный индентификатор аукциона</param>
-    [HttpGet("get-by-id/{id:guid}")]
-    public async Task<Result<AuctionDto>> GetAuctionByIdAsync(Guid id)
+    [HttpGet("get-by-id")]
+    public async Task<Result<AuctionDto>> GetAuctionByIdAsync([FromQuery] Guid id)
     {
         return await _getHandler.GetAuctionByIdAsync(id);
     }
@@ -117,8 +117,8 @@ public class AuctionController : ControllerBase
     /// Запрос на установку даты завершения аукциона
     /// </summary>
     /// <param name="id">Уникальный индентификатор аукциона</param>
-    [HttpPut("date-end/{id:guid}")]
-    public async Task SetDateEndAsync(Guid id)
+    [HttpPut("date-end")]
+    public async Task SetDateEndAsync([FromQuery] Guid id)
     {
         await _setDateEndHandler.SetDateEndAuctionAsync(id);
     }
@@ -127,8 +127,8 @@ public class AuctionController : ControllerBase
     /// Запрос на установку даты начала аукциона
     /// </summary>
     /// <param name="id">Уникальный индентификатор аукциона</param>
-    [HttpPut("date-start/{id:guid}")]
-    public async Task SetDateStartAsync(Guid id)
+    [HttpPut("date-start")]
+    public async Task SetDateStartAsync([FromQuery] Guid id)
     {
         await _setDateStartHandler.SetDateStartAuctionAsync(id);
     }

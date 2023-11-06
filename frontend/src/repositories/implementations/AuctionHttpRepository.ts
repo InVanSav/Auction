@@ -30,7 +30,7 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
   async getByIdAsync(id: string): Promise<Auction | undefined> {
     try {
       const response = await fetch(
-        `${this.baseURL}api/auction/get-by-id/${id}`,
+        `${this.baseURL}api/auction/get-by-id?id=${id}`,
         {
           credentials: "include",
         }
@@ -81,7 +81,7 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
   async deleteAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/auction/delete/${id}`,
+        `${this.baseURL}api/auction/delete?id=${id}`,
         "DELETE",
         {}
       );
@@ -115,7 +115,7 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
   async setDateStartAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/auction/date-start/${id}`,
+        `${this.baseURL}api/auction/date-start?id=${id}`,
         "PUT",
         {}
       );
@@ -133,7 +133,7 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
   async setDateEndAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/auction/date-end/${id}`,
+        `${this.baseURL}api/auction/date-end?id=${id}`,
         "PUT",
         {}
       );

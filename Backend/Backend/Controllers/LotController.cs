@@ -82,8 +82,8 @@ public class LotController : ControllerBase
     /// Запрос на удаление лота
     /// </summary>
     /// <param name="id">Уникальный индентификатор лота</param>
-    [HttpDelete("delete/{id:guid}")]
-    public async Task DeleteLotAsync(Guid id)
+    [HttpDelete("delete")]
+    public async Task DeleteLotAsync([FromQuery] Guid id)
     {
         await _deleteHandler.DeleteLotAsync(id);
     }
@@ -153,8 +153,8 @@ public class LotController : ControllerBase
     /// </summary>
     /// <param name="auctionId">Уникальный индентификатор аукциона</param>
     /// <returns>список лотов</returns>
-    [HttpGet("get-list-by-auction/{auctionId:guid}")]
-    public Task<IReadOnlyCollection<LotDto>> GetLotsByAuctionAsync(Guid auctionId)
+    [HttpGet("get-list-by-auction")]
+    public Task<IReadOnlyCollection<LotDto>> GetLotsByAuctionAsync([FromQuery] Guid auctionId)
     {
         return _getLotsByAuctionHandler.GetLotsByAuction(auctionId);
     }

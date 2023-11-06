@@ -56,9 +56,12 @@ export default class UserHttpRepository implements IUserHttpRepository {
 
   async getByIdAsync(id: string): Promise<User | undefined> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/get-by-id/${id}`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${this.baseURL}api/user/get-by-id?id=${id}`,
+        {
+          credentials: "include",
+        }
+      );
 
       if (!handleCommonResponse(response)) return;
 
@@ -121,7 +124,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
   async deleteAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/user/delete/${id}`,
+        `${this.baseURL}api/user/delete?id=${id}`,
         "DELETE",
         {}
       );

@@ -76,8 +76,8 @@ public class UserController : ControllerBase
     /// Запрос на удаление пользователя
     /// </summary>
     /// <param name="id">Уникальный индентификатор пользователя</param>
-    [HttpDelete("delete/{id:guid}")]
-    public async Task DeleteUserAsync(Guid id)
+    [HttpDelete("delete")]
+    public async Task DeleteUserAsync([FromQuery] Guid id)
     {
         await _deleteHandler.DeleteUserAsync(id);
     }
@@ -87,8 +87,8 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="id">Уникальный индентификатор пользователя</param>
     /// <returns>Пользователь</returns>
-    [HttpGet("get-by-id/{id:guid}")]
-    public Task<UserDto> GetUserByIdAsync(Guid id)
+    [HttpGet("get-by-id")]
+    public Task<UserDto> GetUserByIdAsync([FromQuery] Guid id)
     {
         return _getByIdHandler.GetUserById(id);
     }

@@ -30,7 +30,7 @@ export default class LotHttpRepository implements ILotHttpRepository {
   async getByAuctionAsync(auctionId: string): Promise<Lot[] | undefined> {
     try {
       const response = await fetch(
-        `${this.baseURL}api/lot/get-list-by-auction/${auctionId}`,
+        `${this.baseURL}api/lot/get-list-by-auction?auctionId=${auctionId}`,
         {
           credentials: "include",
         }
@@ -84,7 +84,7 @@ export default class LotHttpRepository implements ILotHttpRepository {
   async deleteAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/lot/delete/${id}`,
+        `${this.baseURL}api/lot/delete?id=${id}`,
         "DELETE",
         {}
       );
