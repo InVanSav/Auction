@@ -5,7 +5,6 @@ export type User = {
   name: string;
   email: string;
   password: string;
-  token: string;
 };
 
 export type Bet = {
@@ -17,9 +16,8 @@ export type Bet = {
 };
 
 export type Image = {
-  id: string;
-  lotId: string;
-  path: string;
+  name: string;
+  data: string;
 };
 
 export type Lot = {

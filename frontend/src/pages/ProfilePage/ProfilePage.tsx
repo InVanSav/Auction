@@ -1,42 +1,27 @@
-import { useNavigate } from "react-router-dom";
-import { useUserAuthorityContext } from "../../contexts/UserAuthorityContext";
 import "./ProfilePage.css";
-import { useEffect } from "react";
-import { useLotContext } from "../../contexts/LotContext";
 import LotCard from "../../components/cards/lotCard/LotCard";
-import { useAuctionContext } from "../../contexts/AuctionContext";
 import AuctionCard from "../../components/cards/auctionCard/AuctionCard";
 import { Auction, User } from "../../objects/Entities";
-import { useUserContext } from "../../contexts/UserContext";
+import { UserAuthorizationContext } from "../../contexts/UserAuthorizationContext";
+import { useContext } from "react";
+import { LotContext } from "../../contexts/LotContext";
+import { AuctionContext } from "../../contexts/AuctionContext";
 
 export default function ProfilePage() {
-  const userAuthorityContext = useUserAuthorityContext();
-  const navigate = useNavigate();
+  const { user, signout } = useContext(UserAuthorizationContext);
 
-  useEffect(() => {
-    if (!userAuthorityContext?.checkAccess()) navigate("/authority");
-  });
+  const { lots } = useContext(LotContext);
+  const { auctions } = useContext(AuctionContext);
+  const { members } = useContext(UserAuthorizationContext);
 
-  const signout = userAuthorityContext?.signout;
-  const user = userAuthorityContext?.user;
-  const lots = useLotContext()?.lots;
-
-  const auctions = useAuctionContext()?.auctions.filter(
+  const filteredAuctions = auctions?.filter(
     (auction) => auction.authorId === user?.id
   );
-
-  const users = useUserContext();
-
-  const userImage = require("../../components/header/assets/user.png");
 
   return (
     <div className="profile_container">
       <div className="main_info">
-        <img
-          className="profile_image"
-          src={userImage}
-          alt="Изображение профиля"
-        />
+        <img className="profile_image" alt="Изображение профиля" />
         <div className="profile_data">
           <div className="user_name">{user?.name}</div>
           <div className="user_email">{user?.email}</div>
@@ -45,6 +30,33 @@ export default function ProfilePage() {
           <button className="signout_button" onClick={signout}>
             Выйти
           </button>
+        </div>
+      </div>
+      <div className="activity_box">
+        <div className="box_title">Ваши аукционы</div>
+        <div className="box_items_auction">
+          {!filteredAuctions?.length ? (
+            <div className="main_empty">
+              <div className="empty">
+                <div>Вы пока не организовывали аукционы</div>
+                <div>Пора начинать!</div>
+              </div>
+            </div>
+          ) : (
+            filteredAuctions
+              ?.map((auction: Auction) => (
+                <AuctionCard
+                  key={auction.id}
+                  auction={auction}
+                  author={
+                    members?.find(
+                      (member: User) => member.id === auction.authorId
+                    )!
+                  }
+                />
+              ))
+              .reverse()
+          )}
         </div>
       </div>
       <div className="activity">
@@ -58,30 +70,11 @@ export default function ProfilePage() {
                 </div>
               </div>
             ) : (
-              lots.map((lot) => <LotCard key={lot.id} lot={lot} />)
-            )}
-          </div>
-        </div>
-        <div className="activity_box">
-          <div className="box_title">Ваши аукционы</div>
-          <div className="box_items">
-            {!auctions?.length ? (
-              <div className="main_empty">
-                <div className="empty">
-                  <div>Вы пока не организовывали аукционы</div>
-                  <div>Пора начинать!</div>
-                </div>
-              </div>
-            ) : (
-              auctions.map((auction: Auction) => (
-                <AuctionCard
-                  key={auction.id}
-                  auction={auction}
-                  author={
-                    users.find((user: User) => user.id === auction.authorId)!
-                  }
-                />
-              ))
+              lots
+                .map((lot, index) => (
+                  <LotCard key={lot.id} lot={lot} number={index} />
+                ))
+                .reverse()
             )}
           </div>
         </div>

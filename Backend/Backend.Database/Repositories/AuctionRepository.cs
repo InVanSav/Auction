@@ -45,7 +45,7 @@ public class AuctionRepository : IAuctionRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор аукциона</param>
     /// <returns>Аукцион</returns>
-    public async Task<Auction> SelectAsync(Guid id)
+    public async Task<Auction?> SelectAsync(Guid id)
     {
         var auction = await _pgsqlHandler.ReadAsync<Auction>(
             "Auction.SelectAuction",
@@ -97,7 +97,8 @@ public class AuctionRepository : IAuctionRepository
                 },
                 new KeyValuePair<string, object>("lotId", lot.Id));
 
-            auction.AddLot(lot, images, bets);
+            var result = auction.AddLot(lot, images, bets);
+            if (result.IsFailed) return null;
         }
 
         return auction;
@@ -180,25 +181,30 @@ public class AuctionRepository : IAuctionRepository
         await _pgsqlHandler.ExecuteAsync("Auction.UpdateAuction",
             new KeyValuePair<string, object>("id", entity.Id),
             new KeyValuePair<string, object>("name", entity.Name!),
-            new KeyValuePair<string, object>("description", entity.Description!));
+            new KeyValuePair<string, object>("description", entity.Description!),
+            new KeyValuePair<string, object>("dateStart", entity.DateStart!),
+            new KeyValuePair<string, object>("dateEnd", entity.DateEnd!),
+            new KeyValuePair<string, object>("state", (int)entity.State));
 
         foreach (var lot in entity.Lots.Values)
         {
             await _pgsqlHandler.ExecuteAsync("Lot.UpdateLot",
-                new KeyValuePair<string, object>("id", entity.Id),
+                new KeyValuePair<string, object>("id", lot.Id),
                 new KeyValuePair<string, object>("name", lot.Name),
                 new KeyValuePair<string, object>("description", lot.Description),
-                new KeyValuePair<string, object>("betStep", lot.BetStep));
+                new KeyValuePair<string, object>("startPrice", lot.StartPrice),
+                new KeyValuePair<string, object>("buyoutPrice", lot.BuyoutPrice),
+                new KeyValuePair<string, object>("betStep", lot.BetStep),
+                new KeyValuePair<string, object>("state", (int)lot.State));
 
-            await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
-                new KeyValuePair<string, object>("lotId", lot.Id));
-
-            foreach (var image in lot.Images)
+            foreach (var bet in lot.Bets)
             {
-                await _pgsqlHandler.ExecuteAsync("Image.InsertImage",
-                    new KeyValuePair<string, object>("id", image.Id),
-                    new KeyValuePair<string, object>("lotId", image.LotId),
-                    new KeyValuePair<string, object>("path", image.Path!));
+                await _pgsqlHandler.ExecuteAsync("Bet.InsertBet",
+                    new KeyValuePair<string, object>("id", bet.Id),
+                    new KeyValuePair<string, object>("value", bet.Value),
+                    new KeyValuePair<string, object>("lotId", bet.LotId),
+                    new KeyValuePair<string, object>("userId", bet.UserId),
+                    new KeyValuePair<string, object>("dateTime", bet.DateTime));
             }
         }
     }
@@ -226,16 +232,16 @@ public class AuctionRepository : IAuctionRepository
                 (State)dataReader.GetInt32("state")),
             new KeyValuePair<string, object>("auctionId", id));
 
-        // foreach (var lot in lots)
-        // {
-        //     await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
-        //         new KeyValuePair<string, object>("lotId", lot.Id));
-        //
-        //     await _pgsqlHandler.ExecuteAsync("Bet.DeleteBet",
-        //         new KeyValuePair<string, object>("lotId", lot.Id));
-        // }
-        //
-        // await _pgsqlHandler.ExecuteAsync("Lot.DeleteLot",
-        //     new KeyValuePair<string, object>("auctionId", id));
+        foreach (var lot in lots)
+        {
+            await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
+                new KeyValuePair<string, object>("lotId", lot.Id));
+
+            await _pgsqlHandler.ExecuteAsync("Bet.DeleteBet",
+                new KeyValuePair<string, object>("lotId", lot.Id));
+        }
+
+        await _pgsqlHandler.ExecuteAsync("Lot.DeleteLot",
+            new KeyValuePair<string, object>("auctionId", id));
     }
 }

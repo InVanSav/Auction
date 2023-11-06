@@ -6,45 +6,45 @@ namespace Backend.Application.AuctionData.Dto;
 /// <summary>
 /// Аукцион
 /// </summary>
-public class AuctionDto
+public record AuctionDto
 {
     /// <summary>
     /// Уникальный идентификатор
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Название аукциона
     /// </summary>
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     /// <summary>
     /// Описание аукциона
     /// </summary>
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     /// <summary>
     /// Начало аукциона
     /// </summary>
-    public DateTime DateStart { get; set; }
+    public DateTime? DateStart { get; init; }
 
     /// <summary>
     /// Завершение аукциона
     /// </summary>
-    public DateTime DateEnd { get; set; }
+    public DateTime? DateEnd { get; init; }
 
     /// <summary>
     /// Уникальный идентификатор пользователя-создателя
     /// </summary>
-    public Guid AuthorId { get; set; }
+    public Guid AuthorId { get; init; }
 
     /// <summary>
     /// Статус ставки
     /// </summary>
-    public State State { get; set; }
+    public State State { get; init; }
 
     /// <summary>
     /// Лоты аукциона
     /// </summary>
-    public IEnumerable<LotDto> Lots { get; set; } = new List<LotDto>();
+    public IEnumerable<LotDto> Lots { get; init; } = new List<LotDto>();
 }

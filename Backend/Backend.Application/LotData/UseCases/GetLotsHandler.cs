@@ -28,30 +28,30 @@ public class GetLotsHandler
     /// <returns>список лотов</returns>
     public async Task<IReadOnlyCollection<LotDto>> GetLots()
     {
+        var lotsDto = new List<LotDto>();
         var lots = await _lotRepository.SelectManyAsync();
 
-        return (from lot in lots
-            let bets = lot.Bets
-            let betsDto = bets.Select(bet => new BetDto
-                {
-                    Id = bet.Id,
-                    Value = bet.Value,
-                    LotId = bet.LotId,
-                    UserId = bet.UserId,
-                    DateTime = bet.DateTime
-                })
-                .AsParallel()
-                .ToList()
-            let images = lot.Images
-            let imagesDto = images.Select(image => new ImageDto
-                {
-                    Id = image.Id,
-                    LotId = image.LotId,
-                    Path = image.Path
-                })
-                .AsParallel()
-                .ToList()
-            select new LotDto
+        // Пока проект тестовый, принято решение оставить упрощенную версию сохранения изображений
+        foreach (var lot in lots)
+        {
+            var imagesData = new List<object>();
+
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Backend.Images", lot.Name);
+            if (!Directory.Exists(imagesPath)) continue;
+
+            var imageFiles = Directory.GetFiles(imagesPath);
+
+            foreach (var imageFile in imageFiles)
+            {
+                var imageBytes = await File.ReadAllBytesAsync(imageFile);
+                var base64Image = Convert.ToBase64String(imageBytes);
+                var imageName = Path.GetFileName(imageFile);
+
+                var imageData = new { name = imageName, data = base64Image };
+                imagesData.Add(imageData);
+            }
+
+            lotsDto.Add(new LotDto()
             {
                 Id = lot.Id,
                 Name = lot.Name,
@@ -60,8 +60,11 @@ public class GetLotsHandler
                 BuyoutPrice = lot.BuyoutPrice,
                 BetStep = lot.BetStep,
                 State = lot.State,
-                Bets = betsDto,
-                Images = imagesDto
-            }).AsParallel().ToList();
+                Bets = lot.Bets,
+                Images = imagesData
+            });
+        }
+
+        return lotsDto;
     }
 }

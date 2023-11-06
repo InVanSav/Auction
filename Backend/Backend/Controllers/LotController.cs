@@ -1,6 +1,6 @@
 using Backend.Application.LotData.Dto;
 using Backend.Application.LotData.UseCases;
-using Backend.Domain.Enum;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -8,8 +8,9 @@ namespace Backend.Controllers;
 /// <summary>
 /// Контроллер лота
 /// </summary>
+[Authorize]
 [ApiController]
-[Route("api/lot/")]
+[Route("api/lot")]
 public class LotController : ControllerBase
 {
     /// <summary>
@@ -80,9 +81,9 @@ public class LotController : ControllerBase
     /// <summary>
     /// Запрос на удаление лота
     /// </summary>
-    /// <param name="id">Уникальный индентификатор аукциона</param>
-    [HttpDelete("delete/{id:guid}/")]
-    public async Task DeleteLotAsync(Guid id)
+    /// <param name="id">Уникальный индентификатор лота</param>
+    [HttpDelete("delete")]
+    public async Task DeleteLotAsync([FromQuery] Guid id)
     {
         await _deleteHandler.DeleteLotAsync(id);
     }
@@ -90,53 +91,48 @@ public class LotController : ControllerBase
     /// <summary>
     /// Запрос на создание лота
     /// </summary>
-    /// <param name="lot">Лот</param>
-    [HttpPost("create/")]
-    public async Task CreateLotASync([FromBody] LotDto lot)
+    /// <param name="formCollection">Изображения лота</param>
+    [HttpPost("create")]
+    public async Task CreateLotASync([FromForm] IFormCollection formCollection)
     {
-        await _createHandler.CreateLotAsync(lot);
+        await _createHandler.CreateLotAsync(formCollection);
     }
 
     /// <summary>
     /// Запрос на выкуп лота
     /// </summary>
-    /// <param name="auctionId">Уникальный индентификатор аукциона</param>
-    /// <param name="lotId">Уникальный индентификатор лота</param>
-    [HttpPut("buyout/{auctionId:guid}/{lotId:guid}/")]
-    public async Task BuyoutLotAsync(Guid auctionId, Guid lotId)
+    /// <param name="buyoutDto">Выкупить лот</param>
+    [HttpPut("buyout")]
+    public async Task BuyoutLotAsync(BuyoutDto buyoutDto)
     {
-        await _buyoutHandler.BuyoutLotAsync(auctionId, lotId);
+        await _buyoutHandler.BuyoutLotAsync(buyoutDto);
     }
 
     /// <summary>
     /// Запрос на изменение статуса лота
     /// </summary>
-    /// <param name="auctionId">Уникальный индентификатор аукциона</param>
-    /// <param name="lotId">Уникальный индентификатор лота</param>
-    /// <param name="state">Новое состояние</param>
-    [HttpPut("change_status/{auctionId:guid}/{lotId:guid}/{state:int}/")]
-    public async Task ChangeLotStatusAsync(Guid auctionId, Guid lotId, int state)
+    /// <param name="changeStatusDto">Изменить статус лота</param>
+    [HttpPut("change-status")]
+    public async Task ChangeLotStatusAsync(ChangeLotStatusDto changeStatusDto)
     {
-        await _changeStatusHandler.ChangeLotStatusAsync(auctionId, lotId, (State)state);
+        await _changeStatusHandler.ChangeLotStatusAsync(changeStatusDto);
     }
 
     /// <summary>
     /// Запрос на ставку
     /// </summary>
-    /// <param name="auctionId">Уникальный индентификатор аукциона</param>
-    /// <param name="lotId">Уникальный индентификатор лота</param>
-    /// <param name="userId">Уникальный индентификатор пользователя</param>
-    [HttpPut("do_bet/{auctionId:guid}/{lotId:guid}/{userId:guid}/")]
-    public async Task DoBetAsync(Guid auctionId, Guid lotId, Guid userId)
+    /// <param name="doBetDto">Сделать ставку</param>
+    [HttpPut("do-bet")]
+    public async Task DoBetAsync(DoBetDto doBetDto)
     {
-        await _doBetHandler.DoBetAsync(auctionId, lotId, userId);
+        await _doBetHandler.DoBetAsync(doBetDto);
     }
 
     /// <summary>
     ///  Запрос на обновление лота
     /// </summary>
     /// <param name="lot"></param>
-    [HttpPut("update/")]
+    [HttpPut("update")]
     public async Task UpdateLotAsync([FromBody] LotDto lot)
     {
         await _updateHandler.UpdateLotAsync(lot);
@@ -146,10 +142,10 @@ public class LotController : ControllerBase
     /// Запрос на получение списка лотов
     /// </summary>
     /// <returns>список лотов</returns>
-    [HttpGet("get_list/")]
-    public async Task<IReadOnlyCollection<LotDto>> GetLotsAsync()
+    [HttpGet("get-list")]
+    public Task<IReadOnlyCollection<LotDto>> GetLotsAsync()
     {
-        return await _getLotsHandler.GetLots();
+        return _getLotsHandler.GetLots();
     }
 
     /// <summary>
@@ -157,9 +153,9 @@ public class LotController : ControllerBase
     /// </summary>
     /// <param name="auctionId">Уникальный индентификатор аукциона</param>
     /// <returns>список лотов</returns>
-    [HttpGet("get_list_by_auction/{auctionId:guid}")]
-    public async Task<IReadOnlyCollection<LotDto>> GetLotsByAuctionAsync(Guid auctionId)
+    [HttpGet("get-list-by-auction")]
+    public Task<IReadOnlyCollection<LotDto>> GetLotsByAuctionAsync([FromQuery] Guid auctionId)
     {
-        return await _getLotsByAuctionHandler.GetLotsByAuction(auctionId);
+        return _getLotsByAuctionHandler.GetLotsByAuction(auctionId);
     }
 }

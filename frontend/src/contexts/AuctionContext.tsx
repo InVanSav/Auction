@@ -1,63 +1,78 @@
 import {
-  ReactNode,
+  PropsWithChildren,
   createContext,
   useContext,
   useEffect,
   useState,
 } from "react";
 
-import { Auction } from "../objects/Entities";
+import { Auction, User } from "../objects/Entities";
 import { State } from "../objects/Enums";
 
 import AuctionHttpRepository from "../repositories/implementations/AuctionHttpRepository";
+import { UserAuthorizationContext } from "./UserAuthorizationContext";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 interface IAuctionContext {
-  auctions: Auction[];
+  auctions: Auction[] | undefined;
+  auction: Auction | undefined;
+
+  author: User | undefined;
+  isAuthor: boolean;
+
+  curAuctionId: string;
+  setAuctionId: (auctionId: string) => void;
 
   createAuction: (
     title: string,
     description: string,
     authorId: string
   ) => Promise<void>;
+  getAuction: (id: string) => Promise<Auction | undefined>;
+  deleteAuction: (auctionId: string) => Promise<void>;
+  changeState: (auctionId: string, state: State) => Promise<void>;
 }
 
-export const AuctionContext = createContext<IAuctionContext | undefined>(
-  undefined
+export const AuctionContext = createContext<IAuctionContext>(
+  {} as IAuctionContext
 );
 
-export const AuctionProvider = ({ children }: { children: ReactNode }) => {
-  const initialAuctions: Auction[] = [
-    {
-      id: "",
-      name: "",
-      description: "",
-      dateStart: new Date(),
-      dateEnd: new Date(),
-      authorId: "",
-      state: State.awaiting,
-      lots: [],
-    },
-  ];
+const auctionRepository = new AuctionHttpRepository("https://localhost:7132/");
 
-  const [auctions, setAuctions] = useState<Auction[]>(initialAuctions);
+export const AuctionProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  const [auction, setAuction] = useState<Auction>();
+  const [auctions, setAuctions] = useState<Auction[] | undefined>([]);
+  const { user, members } = useContext(UserAuthorizationContext);
 
-  const auctionRepository = new AuctionHttpRepository(
-    "https://localhost:7132/"
-  );
+  const [curAuctionId, saveAuctionId] = useLocalStorage("savedAuctionId", "");
+
+  const author = members?.find((member) => member.id === auction?.authorId);
+  const isAuthor = user?.id === author?.id;
 
   useEffect(() => {
-    async function fetchAuctions() {
+    if (!curAuctionId) return;
+
+    const getCurAuctionAsync = async () => {
+      setAuction(await getAuction(curAuctionId));
+    };
+
+    getCurAuctionAsync();
+  }, [curAuctionId]);
+
+  useEffect(() => {
+    const fetchAuctions = async () => {
+      if (!user) return;
       setAuctions(await auctionRepository.getAsync());
-    }
+    };
 
     fetchAuctions();
-  });
+  }, [user]);
 
-  async function createAuction(
+  const createAuction = async (
     title: string,
     description: string,
     authorId: string
-  ) {
+  ) => {
     const auction: Auction = {
       id: "B5FEA3BD-F650-4D61-BE5F-0A1411809E4F",
       name: title,
@@ -70,13 +85,46 @@ export const AuctionProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await auctionRepository.postAsync(auction);
-  }
+  };
+
+  const getAuction = async (
+    auctionId: string
+  ): Promise<Auction | undefined> => {
+    const auction = await auctionRepository.getByIdAsync(auctionId);
+    if (!auction) return;
+    return auction;
+  };
+
+  const deleteAuction = async (auctionId: string) => {
+    if (!(await getAuction(auctionId))) return;
+    await auctionRepository.deleteAsync(auctionId);
+  };
+
+  const changeState = async (auctionId: string, state: State) => {
+    if (!(await getAuction(auctionId))) return;
+    await auctionRepository.changeStateAsync(auctionId, state);
+  };
+
+  const setAuctionId = (auctionId: string) => {
+    saveAuctionId(auctionId);
+  };
 
   return (
-    <AuctionContext.Provider value={{ auctions, createAuction }}>
+    <AuctionContext.Provider
+      value={{
+        auctions,
+        auction,
+        author,
+        isAuthor,
+        curAuctionId,
+        setAuctionId,
+        createAuction,
+        getAuction,
+        deleteAuction,
+        changeState,
+      }}
+    >
       {children}
     </AuctionContext.Provider>
   );
 };
-
-export const useAuctionContext = () => useContext(AuctionContext);

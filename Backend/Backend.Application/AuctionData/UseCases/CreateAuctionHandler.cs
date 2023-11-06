@@ -1,6 +1,7 @@
 using Backend.Application.AuctionData.Dto;
 using Backend.Application.AuctionData.IRepository;
 using Backend.Domain.Entity;
+using Backend.Domain.Enum;
 
 namespace Backend.Application.AuctionData.UseCases;
 
@@ -27,15 +28,15 @@ public class CreateAuctionHandler
     /// Создать аукцион
     /// </summary>
     /// <param name="entity">Аукцион</param>
-    public async Task CreateAuctionAsync(AuctionDto entity)
+    public async Task CreateAuctionAsync(CreateAuctionDto entity)
     {
         await _auctionRepository.CreateAsync(new Auction(
             Guid.NewGuid(),
             entity.Name,
             entity.Description,
-            entity.DateStart,
-            entity.DateEnd,
+            null,
+            null,
             entity.AuthorId,
-            entity.State));
+            State.Awaiting));
     }
 }

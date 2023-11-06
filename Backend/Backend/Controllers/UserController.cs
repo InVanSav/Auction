@@ -1,5 +1,7 @@
 using Backend.Application.UserData.Dto;
 using Backend.Application.UserData.UseCases;
+using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -7,8 +9,9 @@ namespace Backend.Controllers;
 /// <summary>
 /// Контроллер пользователя
 /// </summary>
+[Authorize]
 [ApiController]
-[Route("api/user/")]
+[Route("api/user")]
 public class UserController : ControllerBase
 {
     /// <summary>
@@ -42,6 +45,11 @@ public class UserController : ControllerBase
     private readonly UpdateUserHandler _updateHandler;
 
     /// <summary>
+    /// Обработчик разлогинивания пользователя
+    /// </summary>
+    private readonly SignOutUserHandler _signOutHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="deleteHandler">Обработчик удаления пользователя</param>
@@ -50,9 +58,10 @@ public class UserController : ControllerBase
     /// <param name="signInHandler">Обработчик аутентификации пользователя</param>
     /// <param name="signUpHandler">Обработчик регистрации пользователя</param>
     /// <param name="updateHandler">Обработчик обновления пользователя</param>
+    /// <param name="signOutHandler">Обработчик разлогинивания пользователя</param>
     public UserController(DeleteUserHandler deleteHandler, GetUserByIdHandler getByIdHandler,
         GetUsersHandler getHandler, SignInUserHandler signInHandler, SignUpUserHandler signUpHandler,
-        UpdateUserHandler updateHandler)
+        UpdateUserHandler updateHandler, SignOutUserHandler signOutHandler)
     {
         _deleteHandler = deleteHandler;
         _getByIdHandler = getByIdHandler;
@@ -60,14 +69,15 @@ public class UserController : ControllerBase
         _signInHandler = signInHandler;
         _signUpHandler = signUpHandler;
         _updateHandler = updateHandler;
+        _signOutHandler = signOutHandler;
     }
 
     /// <summary>
     /// Запрос на удаление пользователя
     /// </summary>
     /// <param name="id">Уникальный индентификатор пользователя</param>
-    [HttpDelete("delete/{id:guid}/")]
-    public async Task DeleteUserAsync(Guid id)
+    [HttpDelete("delete")]
+    public async Task DeleteUserAsync([FromQuery] Guid id)
     {
         await _deleteHandler.DeleteUserAsync(id);
     }
@@ -77,17 +87,17 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="id">Уникальный индентификатор пользователя</param>
     /// <returns>Пользователь</returns>
-    [HttpGet("get_by_id/{id:guid}/")]
-    public async Task<UserDto> GetUserByIdAsync(Guid id)
+    [HttpGet("get-by-id")]
+    public Task<UserDto> GetUserByIdAsync([FromQuery] Guid id)
     {
-        return await _getByIdHandler.GetUserById(id);
+        return _getByIdHandler.GetUserById(id);
     }
 
     /// <summary>
     /// Запрос на получение списка пользователей
     /// </summary>
     /// <returns>Список пользователей</returns>
-    [HttpGet("get_list/")]
+    [HttpGet("get-list")]
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
         return await _getHandler.GetUsersAsync();
@@ -96,20 +106,31 @@ public class UserController : ControllerBase
     /// <summary>
     /// Запрос на аутентификацию пользователя
     /// </summary>
-    /// <param name="email">Почта пользователя</param>
-    /// <param name="password">Пароль</param>
     /// <returns>Пользователь</returns>
-    [HttpGet("sign_in/{email}/{password}")]
-    public async Task<UserDto> SignInUserAsync(string email, string password)
+    [HttpPost("sign-out")]
+    public void SignOutUserAsync()
     {
-        return await _signInHandler.SignInUserAsync(email, password);
+        _signOutHandler.SignOutUserAsync();
+    }
+
+    /// <summary>
+    /// Запрос на аутентификацию пользователя
+    /// </summary>
+    /// <param name="user">Пользователь</param>
+    /// <returns>Пользователь</returns>
+    [AllowAnonymous]
+    [HttpPost("sign-in")]
+    public Task<Result<UserDto>> SignInUserAsync([FromBody] UserSignInDto user)
+    {
+        return _signInHandler.SignInUserAsync(user);
     }
 
     /// <summary>
     /// Запрос на регистрацию пользователя
     /// </summary>
     /// <param name="user">Пользователь</param>
-    [HttpPost("sign_up/")]
+    [AllowAnonymous]
+    [HttpPost("sign-up")]
     public async Task SignUpUserAsync([FromBody] UserDto user)
     {
         await _signUpHandler.SignUpUserAsync(user);
@@ -119,7 +140,7 @@ public class UserController : ControllerBase
     /// Запрос на обновление пользователя
     /// </summary>
     /// <param name="user">Пользователь</param>
-    [HttpPut("update/")]
+    [HttpPut("update")]
     public async Task UpdateUserAsync([FromBody] UserDto user)
     {
         await _updateHandler.UpdateUserAsync(user);

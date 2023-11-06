@@ -1,5 +1,7 @@
+import { enqueueSnackbar } from "notistack";
 import { User } from "../../objects/Entities";
 import IUserHttpRepository from "../interfaces/IUserHttpRepository";
+import { handleCommonRequest, handleCommonResponse } from "./RequestHandler";
 
 export default class UserHttpRepository implements IUserHttpRepository {
   private baseURL: string;
@@ -8,75 +10,130 @@ export default class UserHttpRepository implements IUserHttpRepository {
     this.baseURL = baseURL;
   }
 
-  async signinAsync(email: string, password: string): Promise<User> {
+  async signinAsync(
+    email: string,
+    password: string
+  ): Promise<User | undefined> {
     try {
-      const response = await fetch(
-        `${this.baseURL}api/user/sign_in/${email}/${password}`
-      );
-      if (!response.ok) throw new Error("Пользователи не получены");
+      const response = await fetch(`${this.baseURL}api/user/sign-in`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset: UTF-8;",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+      });
 
-      const data = await response.json();
+      if (!handleCommonResponse(response)) return;
 
-      return data;
+      enqueueSnackbar("Вы успешно авторизовались", {
+        variant: "success",
+      });
+
+      return await response.json();
     } catch (error) {
-      throw new Error("Ошибка авторизации, что-пошло не так");
+      enqueueSnackbar("Не удалось авторизоваться, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 
-  async getAsync(): Promise<User[]> {
+  async getAsync(): Promise<User[] | undefined> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/get_list`);
-      if (!response.ok) throw new Error("Пользователи не получены");
+      const response = await fetch(`${this.baseURL}api/user/get-list`, {
+        credentials: "include",
+      });
 
-      const data = await response.json();
+      if (!handleCommonResponse(response)) return;
 
-      return data;
+      return await response.json();
     } catch (error) {
-      throw new Error("Ошибка получения пользователей, что-пошло не так");
+      enqueueSnackbar("Не удалось получить пользователей, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async getByIdAsync(id: string): Promise<User | undefined> {
+    try {
+      const response = await fetch(
+        `${this.baseURL}api/user/get-by-id?id=${id}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (!handleCommonResponse(response)) return;
+
+      return await response.json();
+    } catch (error) {
+      enqueueSnackbar("Не удалось распознать вас, авторизуйтесь", {
+        variant: "error",
+      });
     }
   }
 
   async postAsync(entity: User): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/sign_up`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset: UTF-8;",
-        },
-        body: JSON.stringify(entity),
-      });
+      await handleCommonRequest(
+        `${this.baseURL}api/user/sign-up`,
+        "POST",
+        entity
+      );
 
-      if (!response.ok) throw new Error("Пользователь не создан");
+      enqueueSnackbar("Вы успешно зарегистрировались, нужно авторизоваться", {
+        variant: "success",
+      });
     } catch (error) {
-      throw new Error("Ошибка создания пользователя, что-пошло не так");
+      enqueueSnackbar("Не удалось зарегистрироваться, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async signoutAsync(): Promise<void> {
+    try {
+      await handleCommonRequest(`${this.baseURL}api/user/sign-out`, "POST", {});
+
+      enqueueSnackbar("Вы успешно вышли", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось выполнить выход, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 
   async putAsync(entity: User): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/update`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json; charset: UTF-8;",
-        },
-        body: JSON.stringify(entity),
-      });
+      await handleCommonRequest(
+        `${this.baseURL}api/user/update`,
+        "PUT",
+        entity
+      );
 
-      if (!response.ok) throw new Error("Пользователь не изменен");
+      enqueueSnackbar("Информация успешно обновлена", { variant: "success" });
     } catch (error) {
-      throw new Error("Ошибка изменения пользователя, что-пошло не так");
+      enqueueSnackbar("Пользователь не был изменен, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 
-  async deleteAsync(id: number): Promise<void> {
+  async deleteAsync(id: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/delete/${id}`, {
-        method: "DELETE",
-      });
+      await handleCommonRequest(
+        `${this.baseURL}api/user/delete?id=${id}`,
+        "DELETE",
+        {}
+      );
 
-      if (!response.ok) throw new Error("Пользователь не удален");
+      enqueueSnackbar("Профиль удален", { variant: "success" });
     } catch (error) {
-      throw new Error("Ошибка удаления пользователя, что-пошло не так");
+      enqueueSnackbar("Пользователь не был удален, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 }

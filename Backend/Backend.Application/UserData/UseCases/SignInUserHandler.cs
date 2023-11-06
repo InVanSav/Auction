@@ -1,5 +1,7 @@
 using Backend.Application.UserData.Dto;
 using Backend.Application.UserData.IRepository;
+using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace Backend.Application.UserData.UseCases;
@@ -17,40 +19,53 @@ public class SignInUserHandler
     /// <summary>
     /// Обработчик авторизации
     /// </summary>
-    private readonly AuthorityHandler _authorityHandler;
+    private readonly AuthorizationHandler _authorizationHandler;
+
+    /// <summary>
+    /// Доступ к контексту запроса
+    /// </summary>
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="userRepository">Репозиторий пользователя</param>
-    /// <param name="authorityHandler">Обработчик авторизации</param>
-    public SignInUserHandler(IUserRepository userRepository, IOptions<AuthorityHandler> authorityHandler)
+    /// <param name="authorizationHandler">Обработчик авторизации</param>
+    /// <param name="httpContextAccessor">Доступ к контексту запроса</param>
+    public SignInUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorizationHandler,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
-        _authorityHandler = authorityHandler.Value;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationHandler = authorizationHandler.Value;
     }
 
     /// <summary>
     /// Авторизовать пользователя
     /// </summary>
-    /// <param name="email">Почта пользователя</param>
-    /// <param name="password"></param>
-    public async Task<UserDto> SignInUserAsync(string email, string password)
+    /// <param name="userSignInDto">Аутентификация пользователя</param>
+    public async Task<Result<UserDto>> SignInUserAsync(UserSignInDto userSignInDto)
     {
-        var user = await _userRepository.SelectByNameAsync(email);
+        var user = await _userRepository.SelectByNameAsync(userSignInDto.Email);
 
-        if (!_authorityHandler.VerifyUserData(email, password, user))
-            return new UserDto();
+        if (!_authorizationHandler.VerifyUserData(userSignInDto.Email, userSignInDto.Password, user))
+            return Result.Fail<UserDto>("Пользователя не существует или в данных ошибка");
 
-        var token = _authorityHandler.CreateToken(email);
+        var token = _authorizationHandler.CreateToken(userSignInDto.Email);
 
-        return new UserDto
+        _httpContextAccessor.HttpContext?.Response.Cookies.Append(".AspNet.Application.Id", token,
+            new CookieOptions
+            {
+                MaxAge = TimeSpan.FromMinutes(60),
+                HttpOnly = true,
+                Secure = true
+            });
+
+        return Result.Ok(new UserDto
         {
             Id = user.Id,
             Name = user.Name,
-            Email = user.Email,
-            Password = user.Password,
-            Token = token
-        };
+            Email = user.Email
+        });
     }
 }

@@ -1,4 +1,7 @@
 UPDATE "Auctions"
 SET "name"        = @name,
-    "description" = @description
+    "description" = @description,
+    "dateStart"   = @dateStart,
+    "dateEnd"     = @dateEnd,
+    "state"       = @state
 WHERE "id" = @id;

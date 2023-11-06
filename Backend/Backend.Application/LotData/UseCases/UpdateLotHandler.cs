@@ -30,6 +30,7 @@ public class UpdateLotHandler
     public async Task UpdateLotAsync(LotDto entity)
     {
         var auction = await _auctionRepository.SelectAsync(entity.AuctionId);
+        if (auction is null) return;
 
         var lot = new Lot(
             entity.Id,
@@ -48,7 +49,8 @@ public class UpdateLotHandler
             Path = image.Path
         });
 
-        auction.UpdateLot(lot.Id, lot.Name, lot.Description, lot.BetStep, images);
+        var result = auction.UpdateLot(lot.Id, lot.Name, lot.Description, lot.BetStep, images);
+        if (result.IsFailed) return;
 
         await _auctionRepository.UpdateAsync(auction);
     }

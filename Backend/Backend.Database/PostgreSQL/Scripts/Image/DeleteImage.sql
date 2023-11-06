@@ -1,3 +1,3 @@
 DELETE
 FROM "Images"
-WHERE "id" = @id;
+WHERE "lotId" = @lotId;

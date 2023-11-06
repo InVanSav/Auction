@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Backend.Application.FileHandler;
 using Backend.Application.LotData.IRepository;
 using Backend.Database.PostgreSQL;
 using Backend.Domain.Entity;
@@ -17,12 +18,19 @@ public class LotRepository : ILotRepository
     private readonly PgsqlHandler _pgsqlHandler;
 
     /// <summary>
+    /// Обработчик файлов
+    /// </summary>
+    private readonly FileHandler _fileHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="pgsqlHandler">Обработчик запросов к базе данных</param>
-    public LotRepository(PgsqlHandler pgsqlHandler)
+    /// <param name="fileHandler">Обработчик файлов</param>
+    public LotRepository(PgsqlHandler pgsqlHandler, FileHandler fileHandler)
     {
         _pgsqlHandler = pgsqlHandler;
+        _fileHandler = fileHandler;
     }
 
     /// <summary>
@@ -54,7 +62,7 @@ public class LotRepository : ILotRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор лота</param>
     /// <returns>Лот</returns>
-    public async Task<Lot> SelectAsync(Guid id)
+    public async Task<Lot?> SelectAsync(Guid id)
     {
         var lot = await _pgsqlHandler.ReadAsync<Lot>(
             "Lot.SelectLot",
@@ -214,18 +222,8 @@ public class LotRepository : ILotRepository
             new KeyValuePair<string, object>("id", entity.Id),
             new KeyValuePair<string, object>("name", entity.Name),
             new KeyValuePair<string, object>("description", entity.Description),
-            new KeyValuePair<string, object>("betStep", entity.BetStep));
-
-        await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
-            new KeyValuePair<string, object>("lotId", entity.Id));
-
-        foreach (var image in entity.Images)
-        {
-            await _pgsqlHandler.ExecuteAsync("Image.InsertImage",
-                new KeyValuePair<string, object>("id", image.Id),
-                new KeyValuePair<string, object>("lotId", image.LotId),
-                new KeyValuePair<string, object>("path", image.Path!));
-        }
+            new KeyValuePair<string, object>("betStep", entity.BetStep),
+            new KeyValuePair<string, object>("state", (int)entity.State));
     }
 
     /// <summary>
@@ -235,6 +233,9 @@ public class LotRepository : ILotRepository
     /// <returns>True или False</returns>
     public async Task DeleteAsync(Guid id)
     {
+        var lot = await SelectAsync(id);
+        if (lot is null) return;
+
         await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
             new KeyValuePair<string, object>("lotId", id));
 
@@ -243,5 +244,7 @@ public class LotRepository : ILotRepository
 
         await _pgsqlHandler.ExecuteAsync("Lot.DeleteLot",
             new KeyValuePair<string, object>("id", id));
+
+        await _fileHandler.DeleteImagesFromHostAsync(lot.Name);
     }
 }

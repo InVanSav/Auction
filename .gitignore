@@ -28,6 +28,7 @@ yarn-error.log*
 *.sln.docstates
 
 # Default .gitignore .NET
+/Backend/Backend.Images
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

@@ -1,7 +1,6 @@
 import "./Footer.css";
 
 export default function Footer() {
-  const github = require("./assets/github.png");
   return (
     <footer className="footer">
       <div className="footer_container">
@@ -12,7 +11,7 @@ export default function Footer() {
             rel="noreferrer"
             target="_blank"
           >
-            <img className="github" src={github} alt="Исходники" />
+            <img className="github" alt="Исходники" />
           </a>
           <div className="source_text">
             <div>Savickij Ivan.</div>

@@ -1,0 +1,109 @@
+.about_box {
+  margin: auto 0;
+
+  width: 1200px;
+
+  margin: 20px auto;
+  padding: 30px;
+
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(15px);
+
+  border-radius: 15px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main_information {
+  display: grid;
+  row-gap: 20px;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.adding_info {
+  display: grid;
+  row-gap: 10px;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.about_title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.about_description {
+  font-weight: 500;
+  max-width: 800px;
+
+  overflow-wrap: break-word;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wrapper {
+  display: flex;
+  margin-left: 10px;
+  gap: 10px;
+
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sub_title {
+  font-weight: 600;
+}
+
+.button_auction_box {
+  display: grid;
+  gap: 10px;
+
+  margin-left: 20px;
+}
+
+.change_status {
+  content: url("./assets/status.png");
+}
+
+.image_item {
+  width: 20px;
+}
+
+.edit {
+  content: url("./assets/edit.png");
+}
+
+.completed {
+  content: url("./assets/completed.png");
+}
+
+.delete {
+  content: url("./assets/delete.png");
+  transition: all 0.2s;
+}
+
+.danger_delete_button:hover .delete {
+  content: url("./assets/delete_lighter.png");
+  transition: all 0.2s;
+}
+
+.danger_button {
+  color: rgb(236, 112, 99);
+  max-width: 1200px;
+  transition: all 0.2s;
+}
+
+.danger_button:hover {
+  color: rgb(231, 76, 60);
+  transition: all 0.2s;
+}
+
+.help_div {
+  display: flex;
+}

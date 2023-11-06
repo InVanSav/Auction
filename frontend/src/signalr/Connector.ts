@@ -12,7 +12,7 @@ class Connector {
       .withAutomaticReconnect()
       .build();
 
-    this.connection.start().catch((err) => document.write(err));
+    this.connection.start();
   }
 
   public static getInstance(): Connector {

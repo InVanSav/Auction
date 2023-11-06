@@ -7,7 +7,7 @@
 }
 
 body {
-  background: rgba(33, 97, 140, 0.2);
+  background: rgba(33, 97, 140, 0.4);
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
@@ -31,4 +31,27 @@ html {
   & [data-theme="dark"] {
     color-scheme: dark;
   }
+}
+
+.dismiss_btn {
+  background: none;
+  outline: none;
+  border: none;
+
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+}
+
+.dismiss_image {
+  content: url("./assets/dismiss.png");
+
+  width: 10px;
+  height: 10px;
+}
+
+.dismiss_image:hover {
+  cursor: pointer;
 }

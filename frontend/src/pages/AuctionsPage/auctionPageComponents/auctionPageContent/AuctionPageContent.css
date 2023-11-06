@@ -1,0 +1,43 @@
+.main_container {
+  width: 1200px;
+
+  margin: 20px auto;
+  padding: 30px;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(15px);
+
+  border-radius: 15px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  grid-auto-rows: minmax(100px, auto);
+}
+
+.main_empty {
+  display: grid;
+  align-items: center;
+
+  row-gap: 20px;
+
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.empty {
+  text-align: center;
+  margin: auto;
+
+  font-size: 20px;
+}
+
+@media screen and (max-width: 800px) {
+  .main_container {
+    width: 100%;
+
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

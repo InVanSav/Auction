@@ -32,6 +32,7 @@
 
 .github {
   height: 40px;
+  content: url("./assets/github.png");
 }
 
 .source_text {

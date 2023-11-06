@@ -31,6 +31,8 @@
   flex-direction: row;
   flex-wrap: wrap;
 
+  text-transform: uppercase;
+
   justify-content: space-between;
   align-items: center;
 }

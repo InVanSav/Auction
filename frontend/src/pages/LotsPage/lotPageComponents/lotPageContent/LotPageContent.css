@@ -1,0 +1,28 @@
+.main_container_lots {
+  width: 1200px;
+
+  margin: 20px auto;
+  padding: 30px;
+
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(15px);
+
+  border-radius: 15px;
+
+  display: grid;
+  gap: 20px;
+}
+
+.main_empty {
+  display: grid;
+  align-items: center;
+
+  row-gap: 20px;
+}
+
+.empty {
+  text-align: center;
+  margin: auto;
+
+  font-size: 20px;
+}

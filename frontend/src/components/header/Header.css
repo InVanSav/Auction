@@ -26,10 +26,6 @@
   transition: all 0.3s;
 }
 
-.header.access {
-  display: none;
-}
-
 .header_container {
   padding: 5px 30px;
   margin: 0 auto;
@@ -52,8 +48,9 @@
 
 .logo {
   height: 50px;
-
   margin-right: 10px;
+
+  content: url("./assets/logo.png");
 }
 
 .logo_text {
@@ -94,8 +91,18 @@
   height: 30px;
 }
 
+.item_img.user {
+  content: url("./assets/user.png");
+}
+
 .item_img:hover {
   cursor: pointer;
+}
+
+.cur_user {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media screen and (max-width: 800px) {

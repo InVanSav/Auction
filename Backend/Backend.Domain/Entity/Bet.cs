@@ -8,7 +8,7 @@ public class Bet
     /// <summary>
     /// Уникальный идентификатор
     /// </summary>
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Значение ставки

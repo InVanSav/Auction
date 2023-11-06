@@ -1,5 +1,8 @@
+import { enqueueSnackbar } from "notistack";
 import { Auction } from "../../objects/Entities";
 import IAuctionHttpRepository from "../interfaces/IAuctionHttpRepository";
+import { handleCommonRequest, handleCommonResponse } from "./RequestHandler";
+import { State } from "../../objects/Enums";
 
 export default class AuctionHttpRepository implements IAuctionHttpRepository {
   private baseURL: string;
@@ -8,60 +11,140 @@ export default class AuctionHttpRepository implements IAuctionHttpRepository {
     this.baseURL = baseURL;
   }
 
-  async getAsync(): Promise<Auction[]> {
+  async getAsync(): Promise<Auction[] | undefined> {
     try {
-      const response = await fetch(`${this.baseURL}api/auction/get_list`);
-      if (!response.ok) throw new Error("Аукционы не получены");
+      const response = await fetch(`${this.baseURL}api/auction/get-list`, {
+        credentials: "include",
+      });
 
-      const data = await response.json();
+      if (!handleCommonResponse(response)) return;
 
-      return data;
+      return await response.json();
     } catch (error) {
-      throw new Error("Ошибка получения аукицонов, что-пошло не так");
+      enqueueSnackbar("Не удалось получить аукционы, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async getByIdAsync(id: string): Promise<Auction | undefined> {
+    try {
+      const response = await fetch(
+        `${this.baseURL}api/auction/get-by-id?id=${id}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (!handleCommonResponse(response)) return;
+
+      return await response.json();
+    } catch (error) {
+      enqueueSnackbar("Не удалось получить аукцион, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 
   async postAsync(entity: Auction): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/auction/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset: UTF-8;",
-        },
-        body: JSON.stringify(entity),
-      });
+      await handleCommonRequest(
+        `${this.baseURL}api/auction/create`,
+        "POST",
+        entity
+      );
 
-      if (!response.ok) throw new Error("Аукцион не создан");
+      enqueueSnackbar("Аукцион создан успешно", { variant: "success" });
     } catch (error) {
-      throw new Error("Ошибка создания аукицона, что-пошло не так");
+      enqueueSnackbar("Не удалось создать аукцион, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 
   async putAsync(entity: Auction): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/auction/update`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json; charset: UTF-8;",
-        },
-        body: JSON.stringify(entity),
-      });
+      await handleCommonRequest(
+        `${this.baseURL}api/auction/update`,
+        "PUT",
+        entity
+      );
 
-      if (!response.ok) throw new Error("Аукцион не изменен");
+      enqueueSnackbar("Аукцион успешно изменен", { variant: "success" });
     } catch (error) {
-      throw new Error("Ошибка изменения аукицона, что-пошло не так");
+      enqueueSnackbar("Не удалось изменить аукцион, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 
-  async deleteAsync(id: number): Promise<void> {
+  async deleteAsync(id: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/auction/delete/${id}`, {
-        method: "DELETE",
-      });
+      await handleCommonRequest(
+        `${this.baseURL}api/auction/delete?id=${id}`,
+        "DELETE",
+        {}
+      );
 
-      if (!response.ok) throw new Error("Аукцион не удален");
+      enqueueSnackbar("Аукцион успешно удален", { variant: "success" });
     } catch (error) {
-      throw new Error("Ошибка удаления аукицона, что-пошло не так");
+      enqueueSnackbar("Не удалось удалить аукцион, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async changeStateAsync(auctionId: string, state: State): Promise<void> {
+    try {
+      await handleCommonRequest(
+        `${this.baseURL}api/auction/change-status`,
+        "PUT",
+        { auctionId, state }
+      );
+
+      enqueueSnackbar("Статус аукциона успешно обновлен", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось изменить статус аукциона, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async setDateStartAsync(id: string): Promise<void> {
+    try {
+      await handleCommonRequest(
+        `${this.baseURL}api/auction/date-start?id=${id}`,
+        "PUT",
+        {}
+      );
+
+      enqueueSnackbar("Аукцион стартовал. Хороших торгов", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось начать аукцион, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async setDateEndAsync(id: string): Promise<void> {
+    try {
+      await handleCommonRequest(
+        `${this.baseURL}api/auction/date-end?id=${id}`,
+        "PUT",
+        {}
+      );
+
+      enqueueSnackbar("Аукцион завершен", {
+        variant: "success",
+      });
+    } catch (error) {
+      enqueueSnackbar("Не удалось завершить аукцион, попробуйте снова", {
+        variant: "error",
+      });
     }
   }
 }

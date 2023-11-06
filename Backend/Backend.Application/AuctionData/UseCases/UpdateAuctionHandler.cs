@@ -29,6 +29,7 @@ public class UpdateAuctionHandler
     public async Task UpdateAuctionAsync(AuctionDto entity)
     {
         var auction = await _auctionRepository.SelectAsync(entity.Id);
+        if (auction is null) return;
 
         auction.UpdateInformation(entity.Name, entity.Description);
 

@@ -1,5 +1,6 @@
 using Backend.Application.AuctionData.IRepository;
-using Backend.Domain.Enum;
+using Backend.Application.IRepositories;
+using Backend.Application.LotData.Dto;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -32,14 +33,14 @@ public class ChangeLotStatusHandler
     /// <summary>
     /// Сменить статус лота
     /// </summary>
-    /// <param name="auctionId">Уникальный идентификатор аукциона</param>
-    /// <param name="lotId">Уникальный идентификатор лота</param>
-    /// <param name="state">Новый статус</param>
-    public async Task ChangeLotStatusAsync(Guid auctionId, Guid lotId, State state)
+    /// <param name="changeLotStatusDto">Изменить статус лота</param>
+    public async Task ChangeLotStatusAsync(ChangeLotStatusDto changeLotStatusDto)
     {
-        var auction = await _auctionRepository.SelectAsync(auctionId);
+        var auction = await _auctionRepository.SelectAsync(changeLotStatusDto.AuctionId);
+        if (auction is null) return;
 
-        auction.ChangeLotStatus(lotId, state);
+        var result = auction.ChangeLotStatus(changeLotStatusDto.LotId, changeLotStatusDto.State);
+        if (result.IsFailed) return;
 
         await _auctionRepository.UpdateAsync(auction);
 

@@ -19,6 +19,7 @@
 
 .profile_image {
   width: 50px;
+  content: url("../../components/header/assets/user.png");
 }
 
 .profile_data {
@@ -32,11 +33,16 @@
   margin-bottom: 5px;
 }
 
-.box_items {
+.box_items_auction {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   grid-auto-rows: minmax(100px, auto);
+}
+
+.box_items {
+  display: grid;
+  gap: 20px;
 }
 
 .activity_box {
