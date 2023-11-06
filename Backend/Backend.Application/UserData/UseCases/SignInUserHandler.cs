@@ -19,7 +19,7 @@ public class SignInUserHandler
     /// <summary>
     /// Обработчик авторизации
     /// </summary>
-    private readonly AuthorizationHandler _authorityHandler;
+    private readonly AuthorizationHandler _authorizationHandler;
 
     /// <summary>
     /// Доступ к контексту запроса
@@ -30,14 +30,14 @@ public class SignInUserHandler
     /// .ctor
     /// </summary>
     /// <param name="userRepository">Репозиторий пользователя</param>
-    /// <param name="authorityHandler">Обработчик авторизации</param>
+    /// <param name="authorizationHandler">Обработчик авторизации</param>
     /// <param name="httpContextAccessor">Доступ к контексту запроса</param>
-    public SignInUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorityHandler,
+    public SignInUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorizationHandler,
         IHttpContextAccessor httpContextAccessor)
     {
         _userRepository = userRepository;
         _httpContextAccessor = httpContextAccessor;
-        _authorityHandler = authorityHandler.Value;
+        _authorizationHandler = authorizationHandler.Value;
     }
 
     /// <summary>
@@ -48,10 +48,10 @@ public class SignInUserHandler
     {
         var user = await _userRepository.SelectByNameAsync(userSignInDto.Email);
 
-        if (!_authorityHandler.VerifyUserData(userSignInDto.Email, userSignInDto.Password, user))
+        if (!_authorizationHandler.VerifyUserData(userSignInDto.Email, userSignInDto.Password, user))
             return Result.Fail<UserDto>("Пользователя не существует или в данных ошибка");
 
-        var token = _authorityHandler.CreateToken(userSignInDto.Email);
+        var token = _authorizationHandler.CreateToken(userSignInDto.Email);
 
         _httpContextAccessor.HttpContext?.Response.Cookies.Append(".AspNet.Application.Id", token,
             new CookieOptions
@@ -61,11 +61,11 @@ public class SignInUserHandler
                 Secure = true
             });
 
-        return new UserDto
+        return Result.Ok(new UserDto
         {
             Id = user.Id,
             Name = user.Name,
             Email = user.Email
-        };
+        });
     }
 }

@@ -18,17 +18,17 @@ public class SignUpUserHandler
     /// <summary>
     /// Обработчик авторизации
     /// </summary>
-    private readonly AuthorizationHandler _authorityHandler;
+    private readonly AuthorizationHandler _authorizationHandler;
 
     /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="userRepository">Репозиторий пользователя</param>
-    /// <param name="authorityHandler">Обработчик авторизации</param>
-    public SignUpUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorityHandler)
+    /// <param name="authorizationHandler">Обработчик авторизации</param>
+    public SignUpUserHandler(IUserRepository userRepository, IOptions<AuthorizationHandler> authorizationHandler)
     {
         _userRepository = userRepository;
-        _authorityHandler = authorityHandler.Value;
+        _authorizationHandler = authorizationHandler.Value;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class SignUpUserHandler
     /// <param name="entity">Пользователь</param>
     public async Task SignUpUserAsync(UserDto entity)
     {
-        var password = _authorityHandler.HashAndSaltPassword(entity.Password);
+        var password = _authorizationHandler.HashAndSaltPassword(entity.Password);
 
         await _userRepository.CreateAsync(new User(
             Guid.NewGuid(),

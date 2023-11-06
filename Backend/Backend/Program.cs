@@ -28,7 +28,7 @@ builder.Services.AddOptions<PgsqlConnection>()
     .Bind(builder.Configuration.GetSection("Config:PgsqlConnection"));
 
 builder.Services.AddOptions<AuthorizationHandler>()
-    .Bind(builder.Configuration.GetSection("Config:AuthorityHandler"));
+    .Bind(builder.Configuration.GetSection("Config:AuthorizationHandler"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
