@@ -49,6 +49,6 @@ public class ChangeAuctionStatusHandler
 
         await _auctionRepository.UpdateAsync(auction);
 
-        await _notificationHandler.ChangedAuctionStatusNoticeAsync();
+        await _notificationHandler.ChangedAuctionStatusNoticeAsync(auction.Name!, newStatus.State);
     }
 }

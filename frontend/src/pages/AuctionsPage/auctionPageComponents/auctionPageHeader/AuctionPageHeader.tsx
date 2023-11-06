@@ -43,7 +43,7 @@ export default function AuctionPageHeader() {
         className="create_name"
         type="text"
         value={title}
-        maxLength={30}
+        maxLength={100}
         onChange={(event) => setTitle(event.target.value)}
         placeholder="Введите название аукциона (до 30 символов)"
       />
@@ -51,7 +51,7 @@ export default function AuctionPageHeader() {
         className="create_description"
         rows={10}
         value={description}
-        maxLength={300}
+        maxLength={1000}
         onChange={(event) => setDescription(event.target.value)}
         placeholder="Введите описание аукциона (до 300 символов)"
       ></textarea>

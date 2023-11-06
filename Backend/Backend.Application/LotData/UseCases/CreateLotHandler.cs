@@ -1,3 +1,4 @@
+using Backend.Application.AuctionData.IRepository;
 using Backend.Application.IRepositories;
 using Backend.Application.LotData.IRepository;
 using Backend.Domain.Entity;
@@ -17,6 +18,11 @@ public class CreateLotHandler
     private readonly ILotRepository _lotRepository;
 
     /// <summary>
+    /// Репозиторий аукциона
+    /// </summary>
+    private readonly IAuctionRepository _auctionRepository;
+
+    /// <summary>
     /// Обработчик уведомлений
     /// </summary>
     private readonly INotificationHandler _notificationHandler;
@@ -32,12 +38,14 @@ public class CreateLotHandler
     /// <param name="lotRepository">Репозиторий лота</param>
     /// <param name="notificationHandler">Обработчик уведомлений</param>
     /// <param name="fileHandler">Обработчик файлов</param>
+    /// <param name="auctionRepository">Репозиторий аукциона</param>
     public CreateLotHandler(ILotRepository lotRepository, INotificationHandler notificationHandler,
-        FileHandler.FileHandler fileHandler)
+        FileHandler.FileHandler fileHandler, IAuctionRepository auctionRepository)
     {
         _lotRepository = lotRepository;
         _notificationHandler = notificationHandler;
         _fileHandler = fileHandler;
+        _auctionRepository = auctionRepository;
     }
 
     /// <summary>
@@ -68,6 +76,9 @@ public class CreateLotHandler
         lot.SetImages(images);
         await _lotRepository.CreateAsync(lot);
 
-        await _notificationHandler.CreatedLotNoticeAsync();
+        var auction = await _auctionRepository.SelectAsync(auctionId);
+        if (auction is null) return;
+
+        await _notificationHandler.CreatedLotNoticeAsync(auction.Name!, lot.Name);
     }
 }

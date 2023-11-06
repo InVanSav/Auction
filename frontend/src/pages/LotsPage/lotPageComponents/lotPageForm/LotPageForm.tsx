@@ -79,7 +79,7 @@ export default function LotPageForm() {
           <input
             className="create_name"
             type="text"
-            maxLength={30}
+            maxLength={100}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Введите название лота (до 30 символов)"
@@ -87,7 +87,7 @@ export default function LotPageForm() {
           <textarea
             className="create_description"
             rows={10}
-            maxLength={300}
+            maxLength={1000}
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Введите описание лота (до 300 символов)"

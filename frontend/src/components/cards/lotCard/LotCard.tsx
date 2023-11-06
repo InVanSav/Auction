@@ -25,7 +25,7 @@ export default function LotCard(props: { lot: Lot; number: number }) {
     props.lot.buyoutPrice === 0 ? "Не выкуплен" : `${props.lot.buyoutPrice}р.`;
 
   const curBet = props.lot.bets.length
-    ? Math.max(...props.lot.bets.map((bet) => bet.value))
+    ? Math.max(...props.lot.bets.map((bet) => bet.value)) + "p."
     : "Ставок нет";
 
   const handleOpen = () => {
@@ -95,7 +95,7 @@ export default function LotCard(props: { lot: Lot; number: number }) {
           <div className="info_lot_item child_item">
             <div className="info_lot_subitem">
               <div className="info_price">Начальная цена:</div>
-              <div className="price_text">{props.lot.startPrice}p.</div>
+              <div className="price_text">{props.lot.startPrice}р.</div>
             </div>
             <div className="info_lot_subitem">
               <div className="info_price">Шаг ставки:</div>
@@ -105,7 +105,7 @@ export default function LotCard(props: { lot: Lot; number: number }) {
           <div className="info_lot_item child_item">
             <div className="info_lot_subitem">
               <div className="info_price current_value">Текущая ставка:</div>
-              <div className="price_text">{curBet}p.</div>
+              <div className="price_text">{curBet}</div>
             </div>
             <div className="info_lot_subitem">
               <div className="info_price current_value">Цена выкупа:</div>

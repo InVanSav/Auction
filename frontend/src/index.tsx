@@ -18,6 +18,7 @@ root.render(
       </button>
     )}
     anchorOrigin={{ horizontal: "right", vertical: "top" }}
+    preventDuplicate={true}
   >
     <App />
   </SnackbarProvider>

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Backend.Application.AuctionData.IRepository;
+using Backend.Application.FileHandler;
 using Backend.Database.PostgreSQL;
 using Backend.Domain.Entity;
 using Backend.Domain.Enum;
@@ -17,12 +18,19 @@ public class AuctionRepository : IAuctionRepository
     private readonly PgsqlHandler _pgsqlHandler;
 
     /// <summary>
+    /// Обработчик файлов
+    /// </summary>
+    private readonly FileHandler _fileHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="pgsqlHandler">Обработчик запросов к базе данных</param>
-    public AuctionRepository(PgsqlHandler pgsqlHandler)
+    /// <param name="fileHandler">Обработчик изображений</param>
+    public AuctionRepository(PgsqlHandler pgsqlHandler, FileHandler fileHandler)
     {
         _pgsqlHandler = pgsqlHandler;
+        _fileHandler = fileHandler;
     }
 
     /// <summary>
@@ -216,9 +224,6 @@ public class AuctionRepository : IAuctionRepository
     /// <returns>True или False</returns>
     public async Task DeleteAsync(Guid id)
     {
-        await _pgsqlHandler.ExecuteAsync("Auction.DeleteAuction",
-            new KeyValuePair<string, object>("id", id));
-
         var lots = await _pgsqlHandler.ReadManyByParameterAsync<Lot>(
             "Lot.SelectLotByAuction",
             dataReader => new Lot(
@@ -237,11 +242,16 @@ public class AuctionRepository : IAuctionRepository
             await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
                 new KeyValuePair<string, object>("lotId", lot.Id));
 
+            await _fileHandler.DeleteImagesFromHostAsync(lot.Name);
+
             await _pgsqlHandler.ExecuteAsync("Bet.DeleteBet",
                 new KeyValuePair<string, object>("lotId", lot.Id));
         }
 
-        await _pgsqlHandler.ExecuteAsync("Lot.DeleteLot",
+        await _pgsqlHandler.ExecuteAsync("Lot.DeleteLotByAuction",
             new KeyValuePair<string, object>("auctionId", id));
+
+        await _pgsqlHandler.ExecuteAsync("Auction.DeleteAuction",
+            new KeyValuePair<string, object>("id", id));
     }
 }

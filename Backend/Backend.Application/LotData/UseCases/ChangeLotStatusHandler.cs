@@ -1,6 +1,7 @@
 using Backend.Application.AuctionData.IRepository;
 using Backend.Application.IRepositories;
 using Backend.Application.LotData.Dto;
+using Backend.Application.LotData.IRepository;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -15,6 +16,11 @@ public class ChangeLotStatusHandler
     private readonly IAuctionRepository _auctionRepository;
 
     /// <summary>
+    /// Репозиторий пользователя
+    /// </summary>
+    private readonly ILotRepository _lotRepository;
+
+    /// <summary>
     /// Обработчик уведомлений
     /// </summary>
     private readonly INotificationHandler _notificationHandler;
@@ -24,10 +30,13 @@ public class ChangeLotStatusHandler
     /// </summary>
     /// <param name="auctionRepository">Репозиторий аукциона</param>
     /// <param name="notificationHandler">Обработчик уведомлений</param>
-    public ChangeLotStatusHandler(IAuctionRepository auctionRepository, INotificationHandler notificationHandler)
+    /// <param name="lotRepository">Репозиторий лота</param>
+    public ChangeLotStatusHandler(IAuctionRepository auctionRepository, INotificationHandler notificationHandler,
+        ILotRepository lotRepository)
     {
         _auctionRepository = auctionRepository;
         _notificationHandler = notificationHandler;
+        _lotRepository = lotRepository;
     }
 
     /// <summary>
@@ -44,6 +53,9 @@ public class ChangeLotStatusHandler
 
         await _auctionRepository.UpdateAsync(auction);
 
-        await _notificationHandler.ChangedLotStatusNoticeAsync();
+        var lot = await _lotRepository.SelectAsync(changeLotStatusDto.LotId);
+        if (lot is null) return;
+
+        await _notificationHandler.ChangedLotStatusNoticeAsync(auction.Name!, lot.Name, changeLotStatusDto.State);
     }
 }

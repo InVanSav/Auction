@@ -133,6 +133,6 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.MapHub<AuctionHub>("/auction");
+app.MapHub<AuctionHub>("/notices");
 
 app.Run();

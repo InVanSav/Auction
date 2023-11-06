@@ -67,6 +67,8 @@
         <EmbeddedResource Include="PostgreSQL\Scripts\Lot\SelectLotByAuction.sql"/>
         <None Remove="PostgreSQL\Scripts\User\SelectUserByName.sql"/>
         <EmbeddedResource Include="PostgreSQL\Scripts\User\SelectUserByName.sql"/>
+        <None Remove="PostgreSQL\Scripts\Lot\DeleteLotByAuction.sql" />
+        <EmbeddedResource Include="PostgreSQL\Scripts\Lot\DeleteLotByAuction.sql" />
     </ItemGroup>
 
     <ItemGroup>

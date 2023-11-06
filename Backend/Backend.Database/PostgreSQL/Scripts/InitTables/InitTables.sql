@@ -9,8 +9,8 @@ CREATE TABLE "Users"
 CREATE TABLE "Auctions"
 (
     "id"          uuid PRIMARY KEY NOT NULL,
-    "name"        varchar(35)      NOT NULL,
-    "description" varchar(300)     NOT NULL,
+    "name"        varchar(100)     NOT NULL,
+    "description" varchar(1000)    NOT NULL,
     "dateStart"   timestamp DEFAULT now(),
     "dateEnd"     timestamp DEFAULT now(),
     "authorId"    uuid             NOT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE "Auctions"
 CREATE TABLE "Lots"
 (
     "id"          uuid PRIMARY KEY NOT NULL,
-    "name"        varchar(35)      NOT NULL,
-    "description" varchar(300)     NOT NULL,
+    "name"        varchar(100)     NOT NULL,
+    "description" varchar(1000)    NOT NULL,
     "auctionId"   uuid             NOT NULL,
     "startPrice"  decimal          NOT NULL,
     "buyoutPrice" decimal DEFAULT 0,
@@ -46,6 +46,6 @@ CREATE TABLE "Images"
 (
     "id"    uuid PRIMARY KEY NOT NULL,
     "lotId" uuid             NOT NULL,
-    "path"  varchar(500)     NOT NULL,
+    "path"  varchar(1000)    NOT NULL,
     CONSTRAINT fk_lot FOREIGN KEY ("lotId") REFERENCES "Lots" ("id")
 ); 

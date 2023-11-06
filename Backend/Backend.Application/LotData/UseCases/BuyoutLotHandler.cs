@@ -1,6 +1,7 @@
 using Backend.Application.AuctionData.IRepository;
 using Backend.Application.IRepositories;
 using Backend.Application.LotData.Dto;
+using Backend.Application.LotData.IRepository;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -15,6 +16,11 @@ public class BuyoutLotHandler
     private readonly IAuctionRepository _auctionRepository;
 
     /// <summary>
+    /// Репозиторий лота
+    /// </summary>
+    private readonly ILotRepository _lotRepository;
+
+    /// <summary>
     /// Обработчик уведомлений
     /// </summary>
     private readonly INotificationHandler _notificationHandler;
@@ -24,10 +30,13 @@ public class BuyoutLotHandler
     /// </summary>
     /// <param name="auctionRepository">Репозиторий аукциона</param>
     /// <param name="notificationHandler">Обработчик уведомлений</param>
-    public BuyoutLotHandler(IAuctionRepository auctionRepository, INotificationHandler notificationHandler)
+    /// <param name="lotRepository">Репозиторий лота</param>
+    public BuyoutLotHandler(IAuctionRepository auctionRepository, INotificationHandler notificationHandler,
+        ILotRepository lotRepository)
     {
         _auctionRepository = auctionRepository;
         _notificationHandler = notificationHandler;
+        _lotRepository = lotRepository;
     }
 
     /// <summary>
@@ -38,12 +47,15 @@ public class BuyoutLotHandler
     {
         var auction = await _auctionRepository.SelectAsync(buyoutDto.AuctionId);
         if (auction is null) return;
-        
+
         var result = auction.BuyoutLot(buyoutDto.LotId);
         if (result.IsFailed) return;
 
         await _auctionRepository.UpdateAsync(auction);
 
-        await _notificationHandler.SoldLotNoticeAsync();
+        var lot = await _lotRepository.SelectAsync(buyoutDto.LotId);
+        if (lot is null) return;
+
+        await _notificationHandler.SoldLotNoticeAsync(auction.Name!, lot.Name, lot.BuyoutPrice);
     }
 }

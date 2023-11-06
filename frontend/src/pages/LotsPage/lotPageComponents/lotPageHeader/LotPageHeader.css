@@ -20,6 +20,8 @@
   display: grid;
   row-gap: 20px;
 
+  width: 800px;
+
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
