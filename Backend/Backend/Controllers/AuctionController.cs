@@ -1,6 +1,5 @@
 using Backend.Application.AuctionData.Dto;
 using Backend.Application.AuctionData.UseCases;
-using Backend.Domain.Enum;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

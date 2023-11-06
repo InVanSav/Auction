@@ -1,4 +1,4 @@
-﻿using Backend.Application.Repositories;
+﻿using Backend.Application.IRepositories;
 using Backend.Domain.Entity;
 
 namespace Backend.Application.AuctionData.IRepository;

@@ -1,6 +1,6 @@
 using Backend.Application.AuctionData.Dto;
 using Backend.Application.AuctionData.IRepository;
-using Backend.Application.Repositories;
+using Backend.Application.IRepositories;
 using Backend.Domain.Enum;
 
 namespace Backend.Application.AuctionData.UseCases;
@@ -38,6 +38,7 @@ public class ChangeAuctionStatusHandler
     public async Task ChangeAuctionStatus(ChangeStatusDto newStatus)
     {
         var auction = await _auctionRepository.SelectAsync(newStatus.AuctionId);
+        if (auction is null) return;
 
         auction.ChangeStatus(newStatus.State);
         foreach (var lot in auction.Lots.Values)

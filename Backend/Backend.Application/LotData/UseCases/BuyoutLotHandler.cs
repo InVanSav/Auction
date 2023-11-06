@@ -1,6 +1,6 @@
 using Backend.Application.AuctionData.IRepository;
+using Backend.Application.IRepositories;
 using Backend.Application.LotData.Dto;
-using Backend.Application.Repositories;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -37,7 +37,8 @@ public class BuyoutLotHandler
     public async Task BuyoutLotAsync(BuyoutDto buyoutDto)
     {
         var auction = await _auctionRepository.SelectAsync(buyoutDto.AuctionId);
-
+        if (auction is null) return;
+        
         var result = auction.BuyoutLot(buyoutDto.LotId);
         if (result.IsFailed) return;
 

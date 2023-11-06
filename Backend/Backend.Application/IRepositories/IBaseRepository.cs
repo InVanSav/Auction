@@ -1,4 +1,4 @@
-﻿namespace Backend.Application.Repositories;
+﻿namespace Backend.Application.IRepositories;
 
 /// <summary>
 /// Базовый репозиторий
@@ -16,7 +16,7 @@ public interface IBaseRepository<T>
     /// Получить сущность
     /// </summary>
     /// <returns>Сушность</returns>
-    public Task<T> SelectAsync(Guid id);
+    public Task<T?> SelectAsync(Guid id);
 
     /// <summary>
     /// Получить сущности

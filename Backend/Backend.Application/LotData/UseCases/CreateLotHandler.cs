@@ -1,5 +1,5 @@
+using Backend.Application.IRepositories;
 using Backend.Application.LotData.IRepository;
-using Backend.Application.Repositories;
 using Backend.Domain.Entity;
 using Backend.Domain.Enum;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +54,7 @@ public class CreateLotHandler
             Guid.NewGuid(),
             formCollection["name"],
             formCollection["description"],
-            new Guid(formCollection["auctionId"][0]),
+            auctionId,
             startPrice,
             0,
             betStep,

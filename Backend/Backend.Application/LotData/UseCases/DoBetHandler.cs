@@ -1,6 +1,6 @@
 using Backend.Application.AuctionData.IRepository;
+using Backend.Application.IRepositories;
 using Backend.Application.LotData.Dto;
-using Backend.Application.Repositories;
 
 namespace Backend.Application.LotData.UseCases;
 
@@ -37,11 +37,13 @@ public class DoBetHandler
     public async Task DoBetAsync(DoBetDto doBetDto)
     {
         var auction = await _auctionRepository.SelectAsync(doBetDto.AuctionId);
+        if (auction is null) return;
 
-        auction.DoBet(doBetDto.LotId, doBetDto.UserId);
+        var result = auction.DoBet(doBetDto.LotId, doBetDto.UserId);
+
+        if (result.IsFailed) return;
 
         await _auctionRepository.UpdateAsync(auction);
-
         await _notificationHandler.MadeBetNoticeAsync();
     }
 }

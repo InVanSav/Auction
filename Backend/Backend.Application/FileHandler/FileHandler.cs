@@ -1,5 +1,4 @@
 using Backend.Domain.Entity;
-using FluentResults;
 using Microsoft.AspNetCore.Http;
 
 namespace Backend.Application.FileHandler;

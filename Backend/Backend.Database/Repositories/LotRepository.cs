@@ -62,7 +62,7 @@ public class LotRepository : ILotRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор лота</param>
     /// <returns>Лот</returns>
-    public async Task<Lot> SelectAsync(Guid id)
+    public async Task<Lot?> SelectAsync(Guid id)
     {
         var lot = await _pgsqlHandler.ReadAsync<Lot>(
             "Lot.SelectLot",
@@ -234,6 +234,7 @@ public class LotRepository : ILotRepository
     public async Task DeleteAsync(Guid id)
     {
         var lot = await SelectAsync(id);
+        if (lot is null) return;
 
         await _pgsqlHandler.ExecuteAsync("Image.DeleteImage",
             new KeyValuePair<string, object>("lotId", id));

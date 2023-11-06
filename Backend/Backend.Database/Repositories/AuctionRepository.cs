@@ -45,7 +45,7 @@ public class AuctionRepository : IAuctionRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор аукциона</param>
     /// <returns>Аукцион</returns>
-    public async Task<Auction> SelectAsync(Guid id)
+    public async Task<Auction?> SelectAsync(Guid id)
     {
         var auction = await _pgsqlHandler.ReadAsync<Auction>(
             "Auction.SelectAuction",
@@ -97,7 +97,8 @@ public class AuctionRepository : IAuctionRepository
                 },
                 new KeyValuePair<string, object>("lotId", lot.Id));
 
-            auction.AddLot(lot, images, bets);
+            var result = auction.AddLot(lot, images, bets);
+            if (result.IsFailed) return null;
         }
 
         return auction;
@@ -181,8 +182,8 @@ public class AuctionRepository : IAuctionRepository
             new KeyValuePair<string, object>("id", entity.Id),
             new KeyValuePair<string, object>("name", entity.Name!),
             new KeyValuePair<string, object>("description", entity.Description!),
-            new KeyValuePair<string, object>("dateStart", entity.DateStart),
-            new KeyValuePair<string, object>("dateEnd", entity.DateEnd),
+            new KeyValuePair<string, object>("dateStart", entity.DateStart!),
+            new KeyValuePair<string, object>("dateEnd", entity.DateEnd!),
             new KeyValuePair<string, object>("state", (int)entity.State));
 
         foreach (var lot in entity.Lots.Values)

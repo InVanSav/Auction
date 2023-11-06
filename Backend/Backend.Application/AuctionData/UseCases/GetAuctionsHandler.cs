@@ -39,6 +39,7 @@ public class GetAuctionsHandler
     public async Task<Result<AuctionDto>> GetAuctionByIdAsync(Guid id)
     {
         var auction = await _auctionRepository.SelectAsync(id);
+        if (auction is null) return Result.Fail<AuctionDto>("Не существует такого аукциона");
 
         var lotsDto = new List<LotDto>();
         var lots = auction.Lots;

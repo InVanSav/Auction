@@ -28,6 +28,7 @@ public class SetDateEndAuctionHandler
     public async Task SetDateEndAuctionAsync(Guid id)
     {
         var auction = await _auctionRepository.SelectAsync(id);
+        if (auction is null) return;
 
         auction.SetDateEnd();
 

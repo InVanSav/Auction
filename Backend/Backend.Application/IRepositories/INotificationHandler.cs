@@ -1,4 +1,4 @@
-namespace Backend.Application.Repositories;
+namespace Backend.Application.IRepositories;
 
 /// <summary>
 /// Интерфейс уведомлений

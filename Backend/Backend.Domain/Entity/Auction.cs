@@ -76,30 +76,26 @@ public class Auction
     /// <param name="name">Название аукциона</param>
     /// <param name="description">Описание аукциона</param>
     /// <returns>Успех или неудача</returns>
-    public Result UpdateInformation(string? name, string? description)
+    public void UpdateInformation(string? name, string? description)
     {
         Name = name;
         Description = description;
-
-        return Result.Ok();
     }
 
     /// <summary>
     /// Установить дату начала аукциона
     /// </summary>
     /// <returns>Успех или неудача</returns>
-    public Result SetDateStart()
+    public void SetDateStart()
     {
         DateStart = DateTime.Now;
-
-        return Result.Ok();
     }
 
     /// <summary>
     /// Установить дату завершения аукциона
     /// </summary>
     /// <returns>Успех или неудача</returns>
-    public Result SetDateEnd()
+    public void SetDateEnd()
     {
         DateEnd = DateTime.Now;
 
@@ -107,8 +103,6 @@ public class Auction
         var maxBetDate = lotsWithBets.SelectMany(l => l.Bets).Max(s => s.DateTime).AddSeconds(60);
 
         DateEnd = DateEnd >= maxBetDate ? DateEnd : maxBetDate;
-
-        return Result.Ok();
     }
 
     /// <summary>
@@ -128,7 +122,7 @@ public class Auction
     /// </summary>
     /// <param name="state">Состояние аукциона</param>
     /// <returns>Успех или неудача</returns>
-    public Result ChangeStatus(State state)
+    public void ChangeStatus(State state)
     {
         switch (state)
         {
@@ -141,7 +135,6 @@ public class Auction
         }
 
         State = state;
-        return Result.Ok();
     }
 
     /// <summary>
@@ -208,8 +201,10 @@ public class Auction
     public Result AddLot(Lot lot, IEnumerable<Image> images, IEnumerable<Bet> bets)
     {
         Lots.Add(lot.Id, lot);
-        AddLotImages(lot.Id, images);
-        AddLotBets(lot.Id, bets);
+        var resultImages = AddLotImages(lot.Id, images);
+        var resultLots = AddLotBets(lot.Id, bets);
+
+        if (resultImages.IsFailed || resultLots.IsFailed) return Result.Fail("Лот не был добавлен");
 
         return Result.Ok();
     }

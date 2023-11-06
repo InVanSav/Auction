@@ -43,7 +43,7 @@ public class UserRepository : IUserRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор пользователя</param>
     /// <returns>Пользователь</returns>
-    public async Task<User> SelectAsync(Guid id)
+    public async Task<User?> SelectAsync(Guid id)
     {
         return await _pgsqlHandler.ReadAsync<User>(
             "User.SelectUser",
