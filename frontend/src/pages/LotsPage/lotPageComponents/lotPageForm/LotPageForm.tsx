@@ -6,7 +6,6 @@ import { enqueueSnackbar } from "notistack";
 
 import { AuctionContext } from "../../../../contexts/AuctionContext";
 import { LotContext } from "../../../../contexts/LotContext";
-import { Auction } from "../../../../objects/Entities";
 
 export default function LotPageForm() {
   const { curAuctionId, isAuthor } = useContext(AuctionContext);

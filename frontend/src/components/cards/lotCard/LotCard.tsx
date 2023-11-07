@@ -15,11 +15,11 @@ export default function LotCard(props: { lot: Lot; number: number }) {
   const { changeState, deleteLot, doBet } = useContext(LotContext);
 
   const isChangable =
-    props.lot?.state == State.running ||
-    props.lot?.state == State.editing ||
-    props.lot?.state == State.awaiting;
+    props.lot?.state === State.running ||
+    props.lot?.state === State.editing ||
+    props.lot?.state === State.awaiting;
 
-  const canDoBet = props.lot?.state == State.running;
+  const canDoBet = props.lot?.state === State.running;
 
   const buyoutLot =
     props.lot.buyoutPrice === 0 ? "Не выкуплен" : `${props.lot.buyoutPrice}р.`;
@@ -42,7 +42,7 @@ export default function LotCard(props: { lot: Lot; number: number }) {
       return;
     }
 
-    if (props.lot?.state == state) {
+    if (props.lot?.state === state) {
       enqueueSnackbar("Выберите статус отличный от текущего", {
         variant: "warning",
       });

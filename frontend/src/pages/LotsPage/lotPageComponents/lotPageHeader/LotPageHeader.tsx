@@ -5,7 +5,6 @@ import "./LotPageHeader.css";
 import { enqueueSnackbar } from "notistack";
 
 import { AuctionContext } from "../../../../contexts/AuctionContext";
-import { Auction } from "../../../../objects/Entities";
 import { State, getStateFromEnum } from "../../../../objects/Enums";
 import DropDown from "../../../../components/cards/common/dropDown/DropDown";
 
@@ -17,9 +16,9 @@ export default function LotPageHeader() {
     useContext(AuctionContext);
 
   const isChangable =
-    auction?.state == State.running ||
-    auction?.state == State.editing ||
-    auction?.state == State.awaiting;
+    auction?.state === State.running ||
+    auction?.state === State.editing ||
+    auction?.state === State.awaiting;
 
   const isEndValid = auction?.dateStart! < auction?.dateEnd!;
 
@@ -30,7 +29,7 @@ export default function LotPageHeader() {
   const changeStateCurAuction = async (state: State) => {
     if (!curAuctionId) return;
 
-    if (auction?.state == state) {
+    if (auction?.state === state) {
       enqueueSnackbar("Выберите статус отличный от текущего", {
         variant: "warning",
       });
