@@ -6,7 +6,7 @@ services:
       context: ./Backend/
     container_name: auction-backend
     ports:
-      - "5000:80"
+      - "7132:80"
     depends_on:
       - database
 
@@ -16,9 +16,11 @@ services:
     container_name: auction-frontend
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
 
   database:
-    image: postgres:13
+    image: postgres:14
     container_name: auction-database
     environment:
       POSTGRES_DB: AuctionDB

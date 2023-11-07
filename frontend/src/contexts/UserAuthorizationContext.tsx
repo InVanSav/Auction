@@ -3,14 +3,12 @@ import {
   useEffect,
   useState,
   PropsWithChildren,
-  useContext,
 } from "react";
 
 import { User } from "../objects/Entities";
 
 import UserHttpRepository from "../repositories/implementations/UserHttpRepository";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AuctionContext } from "./AuctionContext";
 import { useLocalStorage } from "@uidotdev/usehooks";
 
 export interface IUserAuthorizationContext {
@@ -30,7 +28,7 @@ export const UserAuthorizationContext =
 export const UserAuthorizationProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const userHttpRepository = new UserHttpRepository("https://localhost:7132/");
+  const userHttpRepository = new UserHttpRepository("http://localhost:7132/");
 
   const [activeUserId, saveActiveUserId] = useLocalStorage(
     "savedActiveUserId",
@@ -42,8 +40,6 @@ export const UserAuthorizationProvider: React.FC<PropsWithChildren> = ({
 
   const [user, setUser] = useState<User | undefined>(undefined);
   const [members, setMembers] = useState<User[] | undefined>(undefined);
-
-  const { auction } = useContext(AuctionContext);
 
   useEffect(() => {
     reloadUserData();
