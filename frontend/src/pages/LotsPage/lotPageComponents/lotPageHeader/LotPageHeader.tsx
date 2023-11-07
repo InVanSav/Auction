@@ -104,13 +104,13 @@ export default function LotPageHeader() {
           </div>
         )}
       </div>
-      {isAuthor && (
+      {isAuthor && isDelitable && (
         <div className="help_div">
           <button
             className="button_item danger_button danger_delete_button"
             onClick={deleteCurAuction}
           >
-            {isDelitable && <img className="image_item delete" alt="Удалить" />}
+            <img className="image_item delete" alt="Удалить" />
           </button>
         </div>
       )}

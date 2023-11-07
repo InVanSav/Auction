@@ -148,13 +148,13 @@ export default function LotCard(props: { lot: Lot; number: number }) {
           Сделать ставку
         </button>
       )}
-      {isAuthor && (
+      {isAuthor && isDelitable && (
         <div className="help_div">
           <button
             className="button_item danger_button danger_delete_button"
             onClick={deleteCurLot}
           >
-            {isDelitable && <img className="image_item delete" alt="Удалить" />}
+            <img className="image_item delete" alt="Удалить" />
           </button>
         </div>
       )}
