@@ -143,9 +143,9 @@ public class LotController : ControllerBase
     /// </summary>
     /// <returns>список лотов</returns>
     [HttpGet("get-list")]
-    public Task<IReadOnlyCollection<LotDto>> GetLotsAsync()
+    public Task<IReadOnlyCollection<LotDto>> GetLotsAsync([FromQuery] Guid userId)
     {
-        return _getLotsHandler.GetLots();
+        return _getLotsHandler.GetLots(userId);
     }
 
     /// <summary>

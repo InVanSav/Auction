@@ -57,8 +57,7 @@ public class SignInUserHandler
             new CookieOptions
             {
                 MaxAge = TimeSpan.FromMinutes(60),
-                HttpOnly = true,
-                Secure = true
+                HttpOnly = true
             });
 
         return Result.Ok(new UserDto

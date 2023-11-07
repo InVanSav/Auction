@@ -15,9 +15,11 @@ export default function LotCard(props: { lot: Lot; number: number }) {
   const { changeState, deleteLot, doBet } = useContext(LotContext);
 
   const isChangable =
-    props.lot?.state === State.running ||
-    props.lot?.state === State.editing ||
-    props.lot?.state === State.awaiting;
+    props.lot.state === State.running ||
+    props.lot.state === State.editing ||
+    props.lot.state === State.awaiting;
+
+  const isDelitable = props.lot.state !== State.running;
 
   const canDoBet = props.lot?.state === State.running;
 
@@ -76,19 +78,22 @@ export default function LotCard(props: { lot: Lot; number: number }) {
 
   return (
     <div className="card_container">
-      <div className="title">{props.number + 1}. {props.lot.name}</div>
+      <div className="title">
+        {props.number + 1}. {props.lot.name}
+      </div>
       <div className="state">Статус: {getStateFromEnum(props.lot.state)}</div>
       <div className="description">{props.lot.description}</div>
       <div className="image_box">
-        {props.lot.images.map((image, index) => (
-          <div key={index}>
-            <img
-              className="image"
-              src={`data:image/jpeg;base64, ${image.data}`}
-              alt={image.name}
-            />
-          </div>
-        ))}
+        {props.lot.images &&
+          props.lot.images.map((image, index) => (
+            <div key={index}>
+              <img
+                className="image"
+                src={`data:image/jpeg;base64, ${image.data}`}
+                alt={image.name}
+              />
+            </div>
+          ))}
       </div>
       <div className="container_info_lot">
         <div className="info_lot_item main_item">
@@ -149,7 +154,7 @@ export default function LotCard(props: { lot: Lot; number: number }) {
             className="button_item danger_button danger_delete_button"
             onClick={deleteCurLot}
           >
-            <img className="image_item delete" alt="Удалить" />
+            {isDelitable && <img className="image_item delete" alt="Удалить" />}
           </button>
         </div>
       )}

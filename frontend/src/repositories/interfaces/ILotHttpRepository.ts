@@ -14,4 +14,6 @@ export default interface ILotHttpRepository extends IBaseHttpRepository<Lot> {
     lotId: string,
     state: State
   ): Promise<void>;
+
+  getByUserIdAsync(userId: string): Promise<Lot[] | undefined>;
 }

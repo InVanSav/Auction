@@ -107,7 +107,7 @@ export default function LotPageForm() {
             />
             <input
               className="inner_item"
-              type="number"
+              type="text"
               value={betStep}
               onChange={(event) => {
                 if (isNaN(+event.target.value)) return;

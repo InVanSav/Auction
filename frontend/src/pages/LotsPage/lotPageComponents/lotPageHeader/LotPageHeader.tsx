@@ -20,6 +20,8 @@ export default function LotPageHeader() {
     auction?.state === State.editing ||
     auction?.state === State.awaiting;
 
+  const isDelitable = auction?.state !== State.running;
+
   const isEndValid = auction?.dateStart! < auction?.dateEnd!;
 
   const handleOpen = () => {
@@ -108,7 +110,7 @@ export default function LotPageHeader() {
             className="button_item danger_button danger_delete_button"
             onClick={deleteCurAuction}
           >
-            <img className="image_item delete" alt="Удалить" />
+            {isDelitable && <img className="image_item delete" alt="Удалить" />}
           </button>
         </div>
       )}

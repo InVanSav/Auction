@@ -95,27 +95,23 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty;
-    });
+    app.UseSwaggerUI();
 }
 
 app.UseCors(x => x
     .AllowAnyMethod()
+    .WithOrigins("http://adm-webbase-66.partner.ru:3000", "http://localhost:3000")
     .AllowAnyHeader()
-    .AllowCredentials()
-    .SetIsOriginAllowed(_ => true));
+    .AllowCredentials());
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.Strict,
     HttpOnly = HttpOnlyPolicy.Always,
-    Secure = CookieSecurePolicy.Always
+    // Secure = CookieSecurePolicy.Always
 });
 
 app.Use(async (context, next) =>
@@ -129,8 +125,6 @@ app.Use(async (context, next) =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

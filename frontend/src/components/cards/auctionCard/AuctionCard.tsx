@@ -38,7 +38,7 @@ export default function AuctionCard(props: { auction: Auction; author: User }) {
             <div className="date_text">{dateEnd.toLocaleString()}</div>
           </div>
         )}
-        <div className="author">{props.author.name}</div>
+        <div className="author">{props.author?.name}</div>
       </div>
       <button className="submit_create" onClick={invite}>
         Подробнее

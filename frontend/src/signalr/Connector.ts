@@ -3,7 +3,7 @@ import { State } from "../objects/Enums";
 
 class Connector {
   private connection: signalR.HubConnection;
-  private URL = "http://localhost:7132/notices";
+  private URL = "http://adm-webbase-66.partner.ru:7132/notices";
 
   static instance: Connector;
 

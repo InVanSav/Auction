@@ -5,8 +5,6 @@ COPY Backend/*.csproj ./Backend/
 COPY Backend.Application/*.csproj ./Backend.Application/
 COPY Backend.Database/*.csproj ./Backend.Database/
 COPY Backend.Domain/*.csproj ./Backend.Domain/
-COPY Backend.Infrastructure/*.csproj ./Backend.Infrastructure/
-COPY Backend.Tests/*.csproj ./Backend.Tests/
 
 RUN dotnet restore Backend/Backend.csproj
 

@@ -65,5 +65,5 @@ public record LotDto
     /// <summary>
     /// Изображения лота
     /// </summary>
-    public IEnumerable<object> Images { get; init; } = new List<object>();
+    public IEnumerable<object>? Images { get; init; } = new List<object>();
 }

@@ -28,7 +28,7 @@ export const UserAuthorizationContext =
 export const UserAuthorizationProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const userHttpRepository = new UserHttpRepository("http://localhost:7132/");
+  const userHttpRepository = new UserHttpRepository("http://adm-webbase-66.partner.ru:7132");
 
   const [activeUserId, saveActiveUserId] = useLocalStorage(
     "savedActiveUserId",

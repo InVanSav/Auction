@@ -84,20 +84,10 @@ export default function AuthorityCard() {
   };
 
   const signupValidation = (
-    login: string,
     email: string,
     password: string,
     repeatPassword: string
   ): boolean => {
-    if (
-      !validateField(
-        login,
-        /^\S{8,30}$/m,
-        "Логин не должен содержать специальных знаков!"
-      )
-    )
-      return false;
-
     if (!commonValidation(email, password)) return false;
 
     if (!repeatPasswordValidation(password, repeatPassword)) return false;
@@ -112,7 +102,7 @@ export default function AuthorityCard() {
   };
 
   const signup = () => {
-    if (!signupValidation(login, email, password, repeatPassword)) return;
+    if (!signupValidation(email, password, repeatPassword)) return;
 
     signupFromContext(login, email, password);
 

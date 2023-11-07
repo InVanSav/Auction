@@ -46,10 +46,7 @@ public class GetAuctionsHandler
 
         foreach (var lot in lots.Values)
         {
-            var imagesData = await _fileHandler.GetImagesFromHost(lot.Name);
-
-            if (imagesData == null)
-                return Result.Fail<AuctionDto>("Изображения не найдены");
+            var imagesData = await _fileHandler.GetImagesFromHostAsync(lot.Name);
 
             lotsDto.Add(new LotDto()
             {
@@ -94,11 +91,8 @@ public class GetAuctionsHandler
 
             foreach (var lot in lots.Values)
             {
-                var imagesData = await _fileHandler.GetImagesFromHost(lot.Name);
-
-                if (imagesData == null)
-                    return Result.Fail<IReadOnlyCollection<AuctionDto>>("Изображения не найдены");
-
+                var imagesData = await _fileHandler.GetImagesFromHostAsync(lot.Name);
+                
                 lotsDto.Add(new LotDto()
                 {
                     Id = lot.Id,

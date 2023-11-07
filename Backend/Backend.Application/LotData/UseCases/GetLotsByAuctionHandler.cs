@@ -15,12 +15,19 @@ public class GetLotsByAuctionHandler
     private readonly ILotRepository _lotRepository;
 
     /// <summary>
+    /// Обработчик изображений
+    /// </summary>
+    private readonly FileHandler.FileHandler _fileHandler;
+
+    /// <summary>
     /// .ctor
     /// </summary>
     /// <param name="lotRepository">Репозиторий лота</param>
-    public GetLotsByAuctionHandler(ILotRepository lotRepository)
+    /// <param name="fileHandler">Обработчик изображений</param>
+    public GetLotsByAuctionHandler(ILotRepository lotRepository, FileHandler.FileHandler fileHandler)
     {
         _lotRepository = lotRepository;
+        _fileHandler = fileHandler;
     }
 
     /// <summary>
@@ -34,22 +41,7 @@ public class GetLotsByAuctionHandler
 
         foreach (var lot in lots)
         {
-            var imagesData = new List<object>();
-
-            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Backend.Images", lot.Name);
-            if (!Directory.Exists(imagesPath)) continue;
-
-            var imageFiles = Directory.GetFiles(imagesPath);
-
-            foreach (var imageFile in imageFiles)
-            {
-                var imageBytes = await File.ReadAllBytesAsync(imageFile);
-                var base64Image = Convert.ToBase64String(imageBytes);
-                var imageName = Path.GetFileName(imageFile);
-
-                var imageData = new { name = imageName, data = base64Image };
-                imagesData.Add(imageData);
-            }
+            var imagesData = await _fileHandler.GetImagesFromHostAsync(lot.Name);
 
             var betsDto = new List<Bet>();
 

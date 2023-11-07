@@ -13,7 +13,7 @@ public class FileHandler
     /// </summary>
     /// <param name="lotName">Название лота</param>
     /// <returns></returns>
-    public async Task<IEnumerable<object>?> GetImagesFromHost(string lotName)
+    public async Task<IEnumerable<object>?> GetImagesFromHostAsync(string lotName)
     {
         var imagesData = new List<object>();
 
@@ -21,6 +21,8 @@ public class FileHandler
         if (!Directory.Exists(imagesPath)) return null;
 
         var imageFiles = Directory.GetFiles(imagesPath);
+
+        if (imageFiles.Length == 0) return null;
 
         foreach (var imageFile in imageFiles)
         {

@@ -37,7 +37,7 @@ export const AuctionContext = createContext<IAuctionContext>(
   {} as IAuctionContext
 );
 
-const auctionRepository = new AuctionHttpRepository("http://localhost:7132/");
+const auctionRepository = new AuctionHttpRepository("http://adm-webbase-66.partner.ru:7132");
 
 export const AuctionProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [auction, setAuction] = useState<Auction>();

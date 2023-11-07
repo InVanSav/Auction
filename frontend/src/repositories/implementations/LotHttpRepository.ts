@@ -13,9 +13,28 @@ export default class LotHttpRepository implements ILotHttpRepository {
 
   async getAsync(): Promise<Lot[] | undefined> {
     try {
-      const response = await fetch(`${this.baseURL}api/lot/get-list`, {
+      const response = await fetch(`${this.baseURL}/api/lot/get-list`, {
         credentials: "include",
       });
+
+      if (!handleCommonResponse(response)) return;
+
+      return await response.json();
+    } catch (error) {
+      enqueueSnackbar("Не удалось получить лоты, попробуйте снова", {
+        variant: "error",
+      });
+    }
+  }
+
+  async getByUserIdAsync(userId: string): Promise<Lot[] | undefined> {
+    try {
+      const response = await fetch(
+        `${this.baseURL}/api/lot/get-list?userId=${userId}`,
+        {
+          credentials: "include",
+        }
+      );
 
       if (!handleCommonResponse(response)) return;
 
@@ -30,7 +49,7 @@ export default class LotHttpRepository implements ILotHttpRepository {
   async getByAuctionAsync(auctionId: string): Promise<Lot[] | undefined> {
     try {
       const response = await fetch(
-        `${this.baseURL}api/lot/get-list-by-auction?auctionId=${auctionId}`,
+        `${this.baseURL}/api/lot/get-list-by-auction?auctionId=${auctionId}`,
         {
           credentials: "include",
         }
@@ -53,7 +72,7 @@ export default class LotHttpRepository implements ILotHttpRepository {
 
   async createLotAsync(formData: FormData): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}api/lot/create`, {
+      const response = await fetch(`${this.baseURL}/api/lot/create`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -71,7 +90,11 @@ export default class LotHttpRepository implements ILotHttpRepository {
 
   async putAsync(entity: Lot): Promise<void> {
     try {
-      await handleCommonRequest(`${this.baseURL}api/lot/update`, "PUT", entity);
+      await handleCommonRequest(
+        `${this.baseURL}/api/lot/update`,
+        "PUT",
+        entity
+      );
 
       enqueueSnackbar("Лот успешно изменен", { variant: "success" });
     } catch (error) {
@@ -84,7 +107,7 @@ export default class LotHttpRepository implements ILotHttpRepository {
   async deleteAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/lot/delete?id=${id}`,
+        `${this.baseURL}/api/lot/delete?id=${id}`,
         "DELETE",
         {}
       );
@@ -103,11 +126,15 @@ export default class LotHttpRepository implements ILotHttpRepository {
     state: State
   ): Promise<void> {
     try {
-      await handleCommonRequest(`${this.baseURL}api/lot/change-status`, "PUT", {
-        auctionId,
-        lotId,
-        state,
-      });
+      await handleCommonRequest(
+        `${this.baseURL}/api/lot/change-status`,
+        "PUT",
+        {
+          auctionId,
+          lotId,
+          state,
+        }
+      );
 
       enqueueSnackbar("Статус лота успешно обновлен", {
         variant: "success",
@@ -125,7 +152,7 @@ export default class LotHttpRepository implements ILotHttpRepository {
     userId: string
   ): Promise<void> {
     try {
-      await handleCommonRequest(`${this.baseURL}api/lot/do-bet`, "PUT", {
+      await handleCommonRequest(`${this.baseURL}/api/lot/do-bet`, "PUT", {
         auctionId,
         lotId,
         userId,

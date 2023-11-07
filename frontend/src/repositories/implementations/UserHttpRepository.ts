@@ -12,7 +12,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
 
   async getAsync(): Promise<User[] | undefined> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/get-list`, {
+      const response = await fetch(`${this.baseURL}/api/user/get-list`, {
         credentials: "include",
       });
 
@@ -29,7 +29,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
   async getByIdAsync(id: string): Promise<User | undefined> {
     try {
       const response = await fetch(
-        `${this.baseURL}api/user/get-by-id?id=${id}`,
+        `${this.baseURL}/api/user/get-by-id?id=${id}`,
         {
           credentials: "include",
         }
@@ -48,7 +48,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
   async postAsync(entity: User): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/user/sign-up`,
+        `${this.baseURL}/api/user/sign-up`,
         "POST",
         entity
       );
@@ -68,7 +68,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
     password: string
   ): Promise<User | undefined> {
     try {
-      const response = await fetch(`${this.baseURL}api/user/sign-in`, {
+      const response = await fetch(`${this.baseURL}/api/user/sign-in`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset: UTF-8;",
@@ -101,7 +101,11 @@ export default class UserHttpRepository implements IUserHttpRepository {
 
   async signoutAsync(): Promise<void> {
     try {
-      await handleCommonRequest(`${this.baseURL}api/user/sign-out`, "POST", {});
+      await handleCommonRequest(
+        `${this.baseURL}/api/user/sign-out`,
+        "POST",
+        {}
+      );
 
       enqueueSnackbar("Вы успешно вышли", {
         variant: "success",
@@ -116,7 +120,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
   async putAsync(entity: User): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/user/update`,
+        `${this.baseURL}/api/user/update`,
         "PUT",
         entity
       );
@@ -132,7 +136,7 @@ export default class UserHttpRepository implements IUserHttpRepository {
   async deleteAsync(id: string): Promise<void> {
     try {
       await handleCommonRequest(
-        `${this.baseURL}api/user/delete?id=${id}`,
+        `${this.baseURL}/api/user/delete?id=${id}`,
         "DELETE",
         {}
       );
