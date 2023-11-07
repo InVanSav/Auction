@@ -19,9 +19,8 @@ export default function LotCard(props: { lot: Lot; number: number }) {
     props.lot.state === State.editing ||
     props.lot.state === State.awaiting;
 
-  const isDelitable = props.lot.state !== State.running;
-
-  const canDoBet = props.lot?.state === State.running;
+  const canDoBet = props.lot.state === State.running;
+  const isDelitable = !canDoBet;
 
   const buyoutLot =
     props.lot.buyoutPrice === 0 ? "Не выкуплен" : `${props.lot.buyoutPrice}р.`;
